@@ -10,7 +10,7 @@
 #include "Script.h"
 #include "time.h"
 
-#include "tinyxml.h"
+#include "tinyxml2.h"
 
 #include "Enums.h"
 
@@ -383,6 +383,9 @@ void editorclass::reset()
     script.customscripts.clear();
 
     returneditoralpha = 0;
+
+    ghosts.clear();
+    currentghosts = 0;
 }
 
 void editorclass::gethooks()
@@ -1643,21 +1646,21 @@ bool editorclass::load(std::string& _path)
         printf("Custom asset directory does not exist\n");
     }
 
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument(_path.c_str(), &doc))
+    tinyxml2::XMLDocument doc(true, tinyxml2::COLLAPSE_WHITESPACE);
+    if (!FILESYSTEM_loadTiXml2Document(_path.c_str(), doc))
     {
         printf("No level %s to load :(\n", _path.c_str());
         return false;
     }
 
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
     version = 0;
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -1666,10 +1669,10 @@ bool editorclass::load(std::string& _path)
 
         pElem->QueryIntAttribute("version", &version);
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -1681,7 +1684,7 @@ bool editorclass::load(std::string& _path)
         if (pKey == "MetaData")
         {
 
-            for( TiXmlElement* subElem = pElem->FirstChildElement(); subElem; subElem= subElem->NextSiblingElement())
+            for( tinyxml2::XMLElement* subElem = pElem->FirstChildElement(); subElem; subElem= subElem->NextSiblingElement())
             {
                 std::string pKey(subElem->Value());
                 const char* pText = subElem->GetText() ;
@@ -1783,7 +1786,7 @@ bool editorclass::load(std::string& _path)
 
         if (pKey == "edEntities")
         {
-            for( TiXmlElement* edEntityEl = pElem->FirstChildElement(); edEntityEl; edEntityEl=edEntityEl->NextSiblingElement())
+            for( tinyxml2::XMLElement* edEntityEl = pElem->FirstChildElement(); edEntityEl; edEntityEl=edEntityEl->NextSiblingElement())
             {
                 edentities entity;
 
@@ -1810,7 +1813,7 @@ bool editorclass::load(std::string& _path)
         if (pKey == "levelMetaData")
         {
             int i = 0;
-            for( TiXmlElement* edLevelClassElement = pElem->FirstChildElement(); edLevelClassElement; edLevelClassElement=edLevelClassElement->NextSiblingElement())
+            for( tinyxml2::XMLElement* edLevelClassElement = pElem->FirstChildElement(); edLevelClassElement; edLevelClassElement=edLevelClassElement->NextSiblingElement())
             {
                 std::string pKey(edLevelClassElement->Value());
                 if(edLevelClassElement->GetText() != NULL)
@@ -1897,23 +1900,22 @@ bool editorclass::load(std::string& _path)
 
 bool editorclass::save(std::string& _path)
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "MapData" );
+    tinyxml2::XMLElement * root = doc.NewElement( "MapData" );
     root->SetAttribute("version",version);
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * data = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * data = doc.NewElement( "Data" );
     root->LinkEndChild( data );
 
-    msg = new TiXmlElement( "MetaData" );
+    msg = doc.NewElement( "MetaData" );
 
     time_t rawtime;
     struct tm * timeinfo;
@@ -1930,54 +1932,54 @@ bool editorclass::save(std::string& _path)
     }
 
     //getUser
-    TiXmlElement* meta = new TiXmlElement( "Creator" );
-    meta->LinkEndChild( new TiXmlText( EditorData::GetInstance().creator.c_str() ));
+    tinyxml2::XMLElement* meta = doc.NewElement( "Creator" );
+    meta->LinkEndChild( doc.NewText( EditorData::GetInstance().creator.c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Title" );
-    meta->LinkEndChild( new TiXmlText( EditorData::GetInstance().title.c_str() ));
+    meta = doc.NewElement( "Title" );
+    meta->LinkEndChild( doc.NewText( EditorData::GetInstance().title.c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Created" );
-    meta->LinkEndChild( new TiXmlText( help.String(version).c_str() ));
+    meta = doc.NewElement( "Created" );
+    meta->LinkEndChild( doc.NewText( help.String(version).c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Modified" );
-    meta->LinkEndChild( new TiXmlText( EditorData::GetInstance().modifier.c_str() ) );
+    meta = doc.NewElement( "Modified" );
+    meta->LinkEndChild( doc.NewText( EditorData::GetInstance().modifier.c_str() ) );
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Modifiers" );
-    meta->LinkEndChild( new TiXmlText( help.String(version).c_str() ));
+    meta = doc.NewElement( "Modifiers" );
+    meta->LinkEndChild( doc.NewText( help.String(version).c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Desc1" );
-    meta->LinkEndChild( new TiXmlText( Desc1.c_str() ));
+    meta = doc.NewElement( "Desc1" );
+    meta->LinkEndChild( doc.NewText( Desc1.c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Desc2" );
-    meta->LinkEndChild( new TiXmlText( Desc2.c_str() ));
+    meta = doc.NewElement( "Desc2" );
+    meta->LinkEndChild( doc.NewText( Desc2.c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "Desc3" );
-    meta->LinkEndChild( new TiXmlText( Desc3.c_str() ));
+    meta = doc.NewElement( "Desc3" );
+    meta->LinkEndChild( doc.NewText( Desc3.c_str() ));
     msg->LinkEndChild( meta );
 
-    meta = new TiXmlElement( "website" );
-    meta->LinkEndChild( new TiXmlText( website.c_str() ));
+    meta = doc.NewElement( "website" );
+    meta->LinkEndChild( doc.NewText( website.c_str() ));
     msg->LinkEndChild( meta );
 
     data->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "mapwidth" );
-    msg->LinkEndChild( new TiXmlText( help.String(mapwidth).c_str() ));
+    msg = doc.NewElement( "mapwidth" );
+    msg->LinkEndChild( doc.NewText( help.String(mapwidth).c_str() ));
     data->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "mapheight" );
-    msg->LinkEndChild( new TiXmlText( help.String(mapheight).c_str() ));
+    msg = doc.NewElement( "mapheight" );
+    msg->LinkEndChild( doc.NewText( help.String(mapheight).c_str() ));
     data->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "levmusic" );
-    msg->LinkEndChild( new TiXmlText( help.String(levmusic).c_str() ));
+    msg = doc.NewElement( "levmusic" );
+    msg->LinkEndChild( doc.NewText( help.String(levmusic).c_str() ));
     data->LinkEndChild( msg );
 
     //New save format
@@ -1989,15 +1991,15 @@ bool editorclass::save(std::string& _path)
             contentsString += help.String(contents[x + (maxwidth*40*y)]) + ",";
         }
     }
-    msg = new TiXmlElement( "contents" );
-    msg->LinkEndChild( new TiXmlText( contentsString.c_str() ));
+    msg = doc.NewElement( "contents" );
+    msg->LinkEndChild( doc.NewText( contentsString.c_str() ));
     data->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "edEntities" );
+    msg = doc.NewElement( "edEntities" );
     for(size_t i = 0; i < edentity.size(); i++)
     {
-        TiXmlElement *edentityElement = new TiXmlElement( "edentity" );
+        tinyxml2::XMLElement *edentityElement = doc.NewElement( "edentity" );
         edentityElement->SetAttribute( "x", edentity[i].x);
         edentityElement->SetAttribute(  "y", edentity[i].y);
         edentityElement->SetAttribute(  "t", edentity[i].t);
@@ -2007,16 +2009,16 @@ bool editorclass::save(std::string& _path)
         edentityElement->SetAttribute( "p4", edentity[i].p4);
         edentityElement->SetAttribute( "p5", edentity[i].p5);
         edentityElement->SetAttribute(  "p6", edentity[i].p6);
-        edentityElement->LinkEndChild( new TiXmlText( edentity[i].scriptname.c_str() )) ;
+        edentityElement->LinkEndChild( doc.NewText( edentity[i].scriptname.c_str() )) ;
         msg->LinkEndChild( edentityElement );
     }
 
     data->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "levelMetaData" );
+    msg = doc.NewElement( "levelMetaData" );
     for(int i = 0; i < 400; i++)
     {
-        TiXmlElement *edlevelclassElement = new TiXmlElement( "edLevelClass" );
+        tinyxml2::XMLElement *edlevelclassElement = doc.NewElement( "edLevelClass" );
         edlevelclassElement->SetAttribute( "tileset", level[i].tileset);
         edlevelclassElement->SetAttribute(  "tilecol", level[i].tilecol);
         edlevelclassElement->SetAttribute(  "platx1", level[i].platx1);
@@ -2032,7 +2034,7 @@ bool editorclass::save(std::string& _path)
         edlevelclassElement->SetAttribute(  "directmode", level[i].directmode);
         edlevelclassElement->SetAttribute(  "warpdir", level[i].warpdir);
 
-        edlevelclassElement->LinkEndChild( new TiXmlText( level[i].roomname.c_str() )) ;
+        edlevelclassElement->LinkEndChild( doc.NewText( level[i].roomname.c_str() )) ;
         msg->LinkEndChild( edlevelclassElement );
     }
     data->LinkEndChild( msg );
@@ -2048,11 +2050,11 @@ bool editorclass::save(std::string& _path)
             scriptString += script_.contents[i] + "|";
         }
     }
-    msg = new TiXmlElement( "script" );
-    msg->LinkEndChild( new TiXmlText( scriptString.c_str() ));
+    msg = doc.NewElement( "script" );
+    msg->LinkEndChild( doc.NewText( scriptString.c_str() ));
     data->LinkEndChild( msg );
 
-    return FILESYSTEM_saveTiXmlDocument(("levels/" + _path).c_str(), &doc);
+    return FILESYSTEM_saveTiXml2Document(("levels/" + _path).c_str(), doc);
 }
 
 
@@ -2239,6 +2241,13 @@ void editormenurender(int tr, int tg, int tb)
     {
     case Menu::ed_settings:
         graphics.bigprint( -1, 75, "Map Settings", tr, tg, tb, true);
+        if (game.currentmenuoption == 3)
+        {
+            if (!game.ghostsenabled)
+                graphics.Print(2, 230, "Editor ghost trail is OFF", tr/2, tg/2, tb/2);
+            else
+                graphics.Print(2, 230, "Editor ghost trail is ON", tr, tg, tb);
+        }
         break;
     case Menu::ed_desc:
         if(ed.titlemod)
@@ -2800,6 +2809,36 @@ void editorrender()
                        ed.level[tmp].platy2-ed.level[tmp].platy1,
                        graphics.getBGR(64,64,255-(help.glow/2)));
         }
+    }
+
+    //Draw ghosts (spooky!)
+    if (game.ghostsenabled) {
+        SDL_FillRect(graphics.ghostbuffer, NULL, SDL_MapRGBA(graphics.ghostbuffer->format, 0, 0, 0, 0));
+        for (int i = 0; i < (int)ed.ghosts.size(); i++) {
+            if (i <= ed.currentghosts) { // We don't want all of them to show up at once :)
+                if (ed.ghosts[i].rx != ed.levx || ed.ghosts[i].ry != ed.levy)
+                    continue;
+                point tpoint;
+                tpoint.x = ed.ghosts[i].x;
+                tpoint.y = ed.ghosts[i].y;
+                graphics.setcol(ed.ghosts[i].col);
+                Uint32 alpha = graphics.ct.colour & graphics.backBuffer->format->Amask;
+                Uint32 therest = graphics.ct.colour & 0x00FFFFFF;
+                alpha = (3 * (alpha >> 24) / 4) << 24;
+                graphics.ct.colour = therest | alpha;
+                SDL_Rect drawRect = graphics.sprites_rect;
+                drawRect.x += tpoint.x;
+                drawRect.y += tpoint.y;
+                BlitSurfaceColoured(graphics.sprites[ed.ghosts[i].frame],NULL, graphics.ghostbuffer, &drawRect, graphics.ct);
+            }
+        }
+        if (ed.currentghosts + 1 < (int)ed.ghosts.size()) {
+            ed.currentghosts++;
+            if (ed.zmod) ed.currentghosts++;
+        } else {
+            ed.currentghosts = (int)ed.ghosts.size() - 1;
+        }
+        SDL_BlitSurface(graphics.ghostbuffer, NULL, graphics.backBuffer, &graphics.bg_rect);
     }
 
     //Draw Cursor
@@ -3574,6 +3613,10 @@ void editormenuactionpress()
             if(ed.levmusic>0) music.play(ed.levmusic);
             break;
         case 3:
+            music.playef(11);
+            game.ghostsenabled = !game.ghostsenabled;
+            break;
+        case 4:
             //Load level
             ed.settingsmod=false;
             graphics.backgrounddrawn=false;
@@ -3587,7 +3630,7 @@ void editormenuactionpress()
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
-        case 4:
+        case 5:
             //Save level
             ed.settingsmod=false;
             graphics.backgrounddrawn=false;
@@ -3601,7 +3644,7 @@ void editormenuactionpress()
             game.mapheld=true;
             graphics.backgrounddrawn=false;
             break;
-        case 5:
+        case 6:
             music.playef(11);
             game.createmenu(Menu::ed_quit);
             map.nexttowercolour();
@@ -4443,6 +4486,7 @@ void editorinput()
                     }
                     else
                     {
+                        ed.currentghosts = 0;
                         if(startpoint==0)
                         {
                             //Checkpoint spawn

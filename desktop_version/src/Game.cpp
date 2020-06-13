@@ -14,7 +14,7 @@
 
 #include "FileSystemUtils.h"
 
-#include "tinyxml.h"
+#include "tinyxml2.h"
 
 #include "Network.h"
 
@@ -279,28 +279,28 @@ void Game::init(void)
 
     saveFilePath = FILESYSTEM_getUserSaveDirectory();
 
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/qsave.vvv", &doc))
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/qsave.vvv", doc))
     {
         quicksummary = "";
         printf("Quick Save Not Found\n");
     }
     else
     {
-        TiXmlHandle hDoc(&doc);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&doc);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         if (!pElem)
         {
             printf("Quick Save Appears Corrupted: No XML Root\n");
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
 
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -315,21 +315,21 @@ void Game::init(void)
     }
 
 
-    TiXmlDocument docTele;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/tsave.vvv", &docTele))
+    tinyxml2::XMLDocument docTele;
+    if (!FILESYSTEM_loadTiXml2Document("saves/tsave.vvv", docTele))
     {
         telesummary = "";
         printf("Teleporter Save Not Found\n");
     }
     else
     {
-        TiXmlHandle hDoc(&docTele);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&docTele);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
 
         {
-            pElem=hDoc.FirstChildElement().Element();
+            pElem=hDoc.FirstChildElement().ToElement();
             // should always have a valid root but handle gracefully if it does
             if (!pElem)
             {
@@ -337,10 +337,10 @@ void Game::init(void)
             }
 
             // save this for later
-            hRoot=TiXmlHandle(pElem);
+            hRoot=tinyxml2::XMLHandle(pElem);
         }
 
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -363,6 +363,9 @@ void Game::init(void)
     //updatestate();
 
     skipfakeload = false;
+
+    ghostsenabled = false;
+    gametimer = 0;
 
     cliplaytest = false;
     playx = 0;
@@ -501,14 +504,17 @@ void Game::lifesequence()
     if (lifeseq > 0)
     {
         int i = obj.getplayer();
-        obj.entities[i].invis = false;
-        if (lifeseq == 2) obj.entities[i].invis = true;
-        if (lifeseq == 6) obj.entities[i].invis = true;
-        if (lifeseq >= 8) obj.entities[i].invis = true;
+        if (i > -1)
+        {
+            obj.entities[i].invis = false;
+            if (lifeseq == 2) obj.entities[i].invis = true;
+            if (lifeseq == 6) obj.entities[i].invis = true;
+            if (lifeseq >= 8) obj.entities[i].invis = true;
+        }
         if (lifeseq > 5) gravitycontrol = savegc;
 
         lifeseq--;
-        if (lifeseq <= 0)
+        if (i > -1 && lifeseq <= 0)
         {
             obj.entities[i].invis = false;
         }
@@ -567,8 +573,8 @@ void Game::loadcustomlevelstats()
     //testing
     if(!customlevelstatsloaded)
     {
-        TiXmlDocument doc;
-        if (!FILESYSTEM_loadTiXmlDocument("saves/levelstats.vvv", &doc))
+        tinyxml2::XMLDocument doc;
+        if (!FILESYSTEM_loadTiXml2Document("saves/levelstats.vvv", doc))
         {
             //No levelstats file exists; start new
             numcustomlevelstats=0;
@@ -576,12 +582,12 @@ void Game::loadcustomlevelstats()
         }
         else
         {
-            TiXmlHandle hDoc(&doc);
-            TiXmlElement* pElem;
-            TiXmlHandle hRoot(0);
+            tinyxml2::XMLHandle hDoc(&doc);
+            tinyxml2::XMLElement* pElem;
+            tinyxml2::XMLHandle hRoot(NULL);
 
             {
-                pElem=hDoc.FirstChildElement().Element();
+                pElem=hDoc.FirstChildElement().ToElement();
                 // should always have a valid root but handle gracefully if it does
                 if (!pElem)
                 {
@@ -589,11 +595,11 @@ void Game::loadcustomlevelstats()
                 }
 
                 // save this for later
-                hRoot=TiXmlHandle(pElem);
+                hRoot=tinyxml2::XMLHandle(pElem);
             }
 
 
-            for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+            for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
             {
                 std::string pKey(pElem->Value());
                 const char* pText = pElem->GetText() ;
@@ -640,24 +646,23 @@ void Game::loadcustomlevelstats()
 
 void Game::savecustomlevelstats()
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Levelstats" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Levelstats" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Levelstats Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Levelstats Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
     if(numcustomlevelstats>=200)numcustomlevelstats=199;
-    msg = new TiXmlElement( "numcustomlevelstats" );
-    msg->LinkEndChild( new TiXmlText( help.String(numcustomlevelstats).c_str() ));
+    msg = doc.NewElement( "numcustomlevelstats" );
+    msg->LinkEndChild( doc.NewText( help.String(numcustomlevelstats).c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string customlevelscorestr;
@@ -665,8 +670,8 @@ void Game::savecustomlevelstats()
     {
         customlevelscorestr += help.String(customlevelscore[i]) + ",";
     }
-    msg = new TiXmlElement( "customlevelscore" );
-    msg->LinkEndChild( new TiXmlText( customlevelscorestr.c_str() ));
+    msg = doc.NewElement( "customlevelscore" );
+    msg->LinkEndChild( doc.NewText( customlevelscorestr.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string customlevelstatsstr;
@@ -674,11 +679,11 @@ void Game::savecustomlevelstats()
     {
         customlevelstatsstr += customlevelstats[i] + "|";
     }
-    msg = new TiXmlElement( "customlevelstats" );
-    msg->LinkEndChild( new TiXmlText( customlevelstatsstr.c_str() ));
+    msg = doc.NewElement( "customlevelstats" );
+    msg->LinkEndChild( doc.NewText( customlevelstatsstr.c_str() ));
     msgs->LinkEndChild( msg );
 
-    if(FILESYSTEM_saveTiXmlDocument("saves/levelstats.vvv", &doc))
+    if(FILESYSTEM_saveTiXml2Document("saves/levelstats.vvv", doc))
     {
         printf("Level stats saved\n");
     }
@@ -904,19 +909,28 @@ void Game::updatestate()
             break;
 
         case 15:
+        {
             //leaving the naughty corner
-            obj.entities[obj.getplayer()].tile = 0;
+            int i = obj.getplayer();
+            if (i > -1)
+            {
+                obj.entities[obj.getplayer()].tile = 0;
+            }
             state = 0;
             break;
+        }
         case 16:
+        {
             //entering the naughty corner
-            if(obj.entities[obj.getplayer()].tile == 0)
+            int i = obj.getplayer();
+            if(i > -1 && obj.entities[i].tile == 0)
             {
-                obj.entities[obj.getplayer()].tile = 144;
+                obj.entities[i].tile = 144;
                 music.playef(2);
             }
             state = 0;
             break;
+        }
 
         case 17:
             //Arrow key tutorial
@@ -1502,12 +1516,12 @@ void Game::updatestate()
 
             i = obj.getplayer();
             hascontrol = false;
-            if (obj.entities[i].onroof > 0 && gravitycontrol == 1)
+            if (i > -1 && obj.entities[i].onroof > 0 && gravitycontrol == 1)
             {
                 gravitycontrol = 0;
                 music.playef(1);
             }
-            if (obj.entities[i].onground > 0)
+            if (i > -1 && obj.entities[i].onground > 0)
             {
                 state++;
             }
@@ -1519,8 +1533,11 @@ void Game::updatestate()
 
             companion = 6;
             i = obj.getcompanion();
-            obj.entities[i].tile = 0;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 0;
+                obj.entities[i].state = 1;
+            }
 
             advancetext = true;
             hascontrol = false;
@@ -1545,8 +1562,11 @@ void Game::updatestate()
             music.playef(2);
             graphics.textboxactive();
             i = obj.getcompanion();
-            obj.entities[i].tile = 54;
-            obj.entities[i].state = 0;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 54;
+                obj.entities[i].state = 0;
+            }
         }
         break;
         case 108:
@@ -1560,8 +1580,11 @@ void Game::updatestate()
         {
 
             i = obj.getcompanion();
-            obj.entities[i].tile = 0;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 0;
+                obj.entities[i].state = 1;
+            }
             graphics.createtextbox("Follow me!", 185, 154, 164, 164, 255);
             state++;
             music.playef(11);
@@ -1620,12 +1643,12 @@ void Game::updatestate()
 
             i = obj.getplayer();
             hascontrol = false;
-            if (obj.entities[i].onground > 0 && gravitycontrol == 0)
+            if (i > -1 && obj.entities[i].onground > 0 && gravitycontrol == 0)
             {
                 gravitycontrol = 1;
                 music.playef(1);
             }
-            if (obj.entities[i].onroof > 0)
+            if (i > -1 && obj.entities[i].onroof > 0)
             {
                 state++;
             }
@@ -1635,8 +1658,11 @@ void Game::updatestate()
         case 122:
             companion = 7;
             i = obj.getcompanion();
-            obj.entities[i].tile = 6;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 6;
+                obj.entities[i].state = 1;
+            }
 
             advancetext = true;
             hascontrol = false;
@@ -1651,7 +1677,7 @@ void Game::updatestate()
             state++;
             music.playef(2);
             graphics.textboxactive();
-            i = obj.getcompanion();	//obj.entities[i].tile = 66;	obj.entities[i].state = 0;
+            i = obj.getcompanion(); if (i > -1) {	/*obj.entities[i].tile = 66;	obj.entities[i].state = 0;*/	}
             break;
         case 126:
             graphics.createtextbox("I can help with that!", 125, 152-40, 164, 164, 255);
@@ -1673,8 +1699,11 @@ void Game::updatestate()
             music.playef(14);
             graphics.textboxactive();
             i = obj.getcompanion();
-            obj.entities[i].tile = 6;
-            obj.entities[i].state = 1;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 6;
+                obj.entities[i].state = 1;
+            }
             break;
         case 132:
             graphics.textboxremove();
@@ -2155,60 +2184,93 @@ void Game::updatestate()
             music.playef(10);
             break;
         case 2502:
+        {
             //Activating a teleporter 2
             state++;
             statedelay = 5;
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
 
-            obj.entities[i].xp = obj.entities[obj.getteleporter()].xp+44;
-            obj.entities[i].yp = obj.entities[obj.getteleporter()].yp+44;
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                int j = obj.getteleporter();
+                if (j > -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                }
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
 
             i = obj.getteleporter();
-            obj.entities[i].tile = 1;
-            obj.entities[i].colour = 101;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 1;
+                obj.entities[i].colour = 101;
+            }
             break;
+        }
         case 2503:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 2504:
             state++;
             i = obj.getplayer();
-            //obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                //obj.entities[i].xp += 10;
+            }
             break;
         case 2505:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 2506:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 2507:
             state++;
             i = obj.getplayer();
-            //obj.entities[i].xp += 4;
+            if (i > -1)
+            {
+                //obj.entities[i].xp += 4;
+            }
             break;
         case 2508:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 2;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 2;
+            }
             break;
         case 2509:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 2510:
             advancetext = true;
@@ -2304,8 +2366,11 @@ void Game::updatestate()
             }
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             i = obj.getcompanion();
             if(i>-1)
@@ -2314,8 +2379,11 @@ void Game::updatestate()
             }
 
             i = obj.getteleporter();
-            obj.entities[i].tile = 1;
-            obj.entities[i].colour = 100;
+            if (i > -1)
+            {
+                obj.entities[i].tile = 1;
+                obj.entities[i].colour = 100;
+            }
             break;
 
         case 3006:
@@ -3295,7 +3363,10 @@ void Game::updatestate()
         case 3511:
             //Activating a teleporter (long version for level complete)
             i = obj.getplayer();
-            obj.entities[i].colour = 102;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 102;
+            }
 
             state++;
             statedelay = 30;
@@ -3332,8 +3403,11 @@ void Game::updatestate()
             screenshake = 0;
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             //we're done here!
             music.playef(10);
@@ -3419,8 +3493,11 @@ void Game::updatestate()
             //state = 3040; //Lab
 
             i = obj.getplayer();
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = true;
+            if (i > -1)
+            {
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = true;
+            }
 
             i = obj.getteleporter();
             if(i>-1)
@@ -3458,52 +3535,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4013:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4014:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4015:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4016:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4017:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4018:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4019:
             if (intimetrial || nodeathmode || inintermission)
@@ -3515,8 +3613,11 @@ void Game::updatestate()
             }
             i = obj.getteleporter();
             activetele = true;
-            teleblock.x = obj.entities[i].xp - 32;
-            teleblock.y = obj.entities[i].yp - 32;
+            if (i > -1)
+            {
+                teleblock.x = obj.entities[i].xp - 32;
+                teleblock.y = obj.entities[i].yp - 32;
+            }
             teleblock.w = 160;
             teleblock.h = 160;
             hascontrol = true;
@@ -3547,52 +3648,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4023:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+            }
             break;
         case 4024:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+            }
             break;
         case 4025:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4026:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4027:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 5;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 5;
+            }
             break;
         case 4028:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 2;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 2;
+            }
             break;
         case 4029:
             hascontrol = true;
@@ -3623,52 +3745,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 0;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 0;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = -6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = -6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = -6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = -6;
+            }
             break;
         case 4033:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 12;
+            }
             break;
         case 4034:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 12;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 12;
+            }
             break;
         case 4035:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 10;
+            }
             break;
         case 4036:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 8;
+            }
             break;
         case 4037:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 5;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 5;
+            }
             break;
         case 4038:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp -= 2;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 2;
+            }
             break;
         case 4039:
             hascontrol = true;
@@ -3699,57 +3842,78 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4043:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 15;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 15;
+            }
             break;
         case 4044:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4045:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 12;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 12;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4046:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4047:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4048:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4049:
             hascontrol = true;
@@ -3780,57 +3944,78 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4053:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 15;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 15;
+            }
             break;
         case 4054:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4055:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 10;
+            }
             break;
         case 4056:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 4;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 4;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4057:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 2;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 2;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4058:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4059:
             hascontrol = true;
@@ -3861,54 +4046,75 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 0;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 0;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = -6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = -6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = -6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = -6;
+            }
             break;
         case 4063:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 28;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 28;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4064:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 28;
-            obj.entities[i].yp -= 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 28;
+                obj.entities[i].yp -= 8;
+            }
             break;
         case 4065:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 25;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 25;
+            }
             break;
         case 4066:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 25;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 25;
+            }
             break;
         case 4067:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp -= 20;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 20;
+            }
             break;
         case 4068:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp -= 16;
+            if (i > -1)
+            {
+                obj.entities[i].xp -= 16;
+            }
             break;
         case 4069:
             hascontrol = true;
@@ -3940,52 +4146,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
-            obj.entities[i].colour = obj.crewcolour(lastsaved);
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
+                obj.entities[i].colour = obj.crewcolour(lastsaved);
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4073:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4074:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4075:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4076:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4077:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4078:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4079:
             state = 0;
@@ -4016,52 +4243,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4083:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4084:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4085:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4086:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4087:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4088:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4089:
             startscript = true;
@@ -4092,52 +4340,73 @@ void Game::updatestate()
 
             i = obj.getplayer();
             j = obj.getteleporter();
-            if (j != -1)
+            if (i > -1)
             {
-                obj.entities[i].xp = obj.entities[j].xp+44;
-                obj.entities[i].yp = obj.entities[j].yp+44;
-                obj.entities[j].tile = 2;
-                obj.entities[j].colour = 101;
-            }
-            obj.entities[i].colour = 0;
-            obj.entities[i].invis = false;
-            obj.entities[i].dir = 1;
+                if (j != -1)
+                {
+                    obj.entities[i].xp = obj.entities[j].xp+44;
+                    obj.entities[i].yp = obj.entities[j].yp+44;
+                    obj.entities[j].tile = 2;
+                    obj.entities[j].colour = 101;
+                }
+                obj.entities[i].colour = 0;
+                obj.entities[i].invis = false;
+                obj.entities[i].dir = 1;
 
-            obj.entities[i].ay = -6;
-            obj.entities[i].ax = 6;
-            obj.entities[i].vy = -6;
-            obj.entities[i].vx = 6;
+                obj.entities[i].ay = -6;
+                obj.entities[i].ax = 6;
+                obj.entities[i].vy = -6;
+                obj.entities[i].vx = 6;
+            }
             break;
         case 4093:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4094:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 10;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 10;
+            }
             break;
         case 4095:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 8;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 8;
+            }
             break;
         case 4096:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 6;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 6;
+            }
             break;
         case 4097:
             state++;
             i = obj.getplayer();
-            obj.entities[i].xp += 3;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 3;
+            }
             break;
         case 4098:
             state++;
             statedelay = 15;
             i = obj.getplayer();
-            obj.entities[i].xp += 1;
+            if (i > -1)
+            {
+                obj.entities[i].xp += 1;
+            }
             break;
         case 4099:
             if (nocutscenes)
@@ -4231,20 +4500,20 @@ void Game::unlocknum( int t )
 
 void Game::loadstats()
 {
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/unlock.vvv", &doc))
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/unlock.vvv", doc))
     {
         savestats();
         printf("No Stats found. Assuming a new player\n");
     }
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -4253,14 +4522,14 @@ void Game::loadstats()
         ;
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
     // WINDOW DIMS, ADDED AT PATCH 22
     int width = 320;
     int height = 240;
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -4462,6 +4731,11 @@ void Game::loadstats()
             }
         }
 
+        if (pKey == "ghostsenabled")
+        {
+            ghostsenabled = atoi(pText);
+        }
+
         if (pKey == "skipfakeload")
         {
             skipfakeload = atoi(pText);
@@ -4554,19 +4828,18 @@ void Game::loadstats()
 
 void Game::savestats()
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement * msg;
+    tinyxml2::XMLDeclaration * decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * dataNode = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * dataNode = doc.NewElement( "Data" );
     root->LinkEndChild( dataNode );
 
     std::string s_unlock;
@@ -4574,8 +4847,8 @@ void Game::savestats()
     {
         s_unlock += help.String(unlock[i]) + ",";
     }
-    msg = new TiXmlElement( "unlock" );
-    msg->LinkEndChild( new TiXmlText( s_unlock.c_str() ));
+    msg = doc.NewElement( "unlock" );
+    msg->LinkEndChild( doc.NewText( s_unlock.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_unlocknotify;
@@ -4583,8 +4856,8 @@ void Game::savestats()
     {
         s_unlocknotify += help.String(unlocknotify[i]) + ",";
     }
-    msg = new TiXmlElement( "unlocknotify" );
-    msg->LinkEndChild( new TiXmlText( s_unlocknotify.c_str() ));
+    msg = doc.NewElement( "unlocknotify" );
+    msg->LinkEndChild( doc.NewText( s_unlocknotify.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_besttimes;
@@ -4592,8 +4865,8 @@ void Game::savestats()
     {
         s_besttimes += help.String(besttimes[i]) + ",";
     }
-    msg = new TiXmlElement( "besttimes" );
-    msg->LinkEndChild( new TiXmlText( s_besttimes.c_str() ));
+    msg = doc.NewElement( "besttimes" );
+    msg->LinkEndChild( doc.NewText( s_besttimes.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_besttrinkets;
@@ -4601,8 +4874,8 @@ void Game::savestats()
     {
         s_besttrinkets += help.String(besttrinkets[i]) + ",";
     }
-    msg = new TiXmlElement( "besttrinkets" );
-    msg->LinkEndChild( new TiXmlText( s_besttrinkets.c_str() ));
+    msg = doc.NewElement( "besttrinkets" );
+    msg->LinkEndChild( doc.NewText( s_besttrinkets.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_bestlives;
@@ -4610,8 +4883,8 @@ void Game::savestats()
     {
         s_bestlives += help.String(bestlives[i]) + ",";
     }
-    msg = new TiXmlElement( "bestlives" );
-    msg->LinkEndChild( new TiXmlText( s_bestlives.c_str() ));
+    msg = doc.NewElement( "bestlives" );
+    msg->LinkEndChild( doc.NewText( s_bestlives.c_str() ));
     dataNode->LinkEndChild( msg );
 
     std::string s_bestrank;
@@ -4619,120 +4892,124 @@ void Game::savestats()
     {
         s_bestrank += help.String(bestrank[i]) + ",";
     }
-    msg = new TiXmlElement( "bestrank" );
-    msg->LinkEndChild( new TiXmlText( s_bestrank.c_str() ));
+    msg = doc.NewElement( "bestrank" );
+    msg->LinkEndChild( doc.NewText( s_bestrank.c_str() ));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "bestgamedeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(bestgamedeaths).c_str() ));
+    msg = doc.NewElement( "bestgamedeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(bestgamedeaths).c_str() ));
     dataNode->LinkEndChild( msg );
-    msg = new TiXmlElement( "stat_trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(stat_trinkets).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "fullscreen" );
-    msg->LinkEndChild( new TiXmlText( help.String(fullscreen).c_str()));
+    msg = doc.NewElement( "stat_trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(stat_trinkets).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "stretch" );
-    msg->LinkEndChild( new TiXmlText( help.String(stretchMode).c_str()));
+    msg = doc.NewElement( "fullscreen" );
+    msg->LinkEndChild( doc.NewText( help.String(fullscreen).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "useLinearFilter" );
-    msg->LinkEndChild( new TiXmlText( help.String(useLinearFilter).c_str()));
+    msg = doc.NewElement( "stretch" );
+    msg->LinkEndChild( doc.NewText( help.String(stretchMode).c_str()));
+    dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement( "useLinearFilter" );
+    msg->LinkEndChild( doc.NewText( help.String(useLinearFilter).c_str()));
     dataNode->LinkEndChild( msg );
 
     int width, height;
     graphics.screenbuffer->GetWindowSize(&width, &height);
-    msg = new TiXmlElement( "window_width" );
-    msg->LinkEndChild( new TiXmlText( help.String(width).c_str()));
+    msg = doc.NewElement( "window_width" );
+    msg->LinkEndChild( doc.NewText( help.String(width).c_str()));
     dataNode->LinkEndChild( msg );
-    msg = new TiXmlElement( "window_height" );
-    msg->LinkEndChild( new TiXmlText( help.String(height).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "noflashingmode" );
-    msg->LinkEndChild( new TiXmlText( help.String(noflashingmode).c_str()));
+    msg = doc.NewElement( "window_height" );
+    msg->LinkEndChild( doc.NewText( help.String(height).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "colourblindmode" );
-    msg->LinkEndChild( new TiXmlText( help.String(colourblindmode).c_str()));
+    msg = doc.NewElement( "noflashingmode" );
+    msg->LinkEndChild( doc.NewText( help.String(noflashingmode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "setflipmode" );
-    msg->LinkEndChild( new TiXmlText( help.String(graphics.setflipmode).c_str()));
+    msg = doc.NewElement( "colourblindmode" );
+    msg->LinkEndChild( doc.NewText( help.String(colourblindmode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "invincibility" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.invincibility).c_str()));
+    msg = doc.NewElement( "setflipmode" );
+    msg->LinkEndChild( doc.NewText( help.String(graphics.setflipmode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "slowdown" );
-    msg->LinkEndChild( new TiXmlText( help.String(slowdown).c_str()));
+    msg = doc.NewElement( "invincibility" );
+    msg->LinkEndChild( doc.NewText( help.String(map.invincibility).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "swnbestrank" );
-    msg->LinkEndChild( new TiXmlText( help.String(swnbestrank).c_str()));
+    msg = doc.NewElement( "slowdown" );
+    msg->LinkEndChild( doc.NewText( help.String(slowdown).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "swnrecord" );
-    msg->LinkEndChild( new TiXmlText( help.String(swnrecord).c_str()));
+    msg = doc.NewElement( "swnbestrank" );
+    msg->LinkEndChild( doc.NewText( help.String(swnbestrank).c_str()));
     dataNode->LinkEndChild( msg );
 
-
-    msg = new TiXmlElement( "advanced_mode" );
-    msg->LinkEndChild( new TiXmlText( help.String(advanced_mode).c_str()));
-    dataNode->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "advanced_smoothing" );
-    msg->LinkEndChild( new TiXmlText( help.String(fullScreenEffect_badSignal).c_str()));
+    msg = doc.NewElement( "swnrecord" );
+    msg->LinkEndChild( doc.NewText( help.String(swnrecord).c_str()));
     dataNode->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "usingmmmmmm" );
-    msg->LinkEndChild( new TiXmlText( help.String(usingmmmmmm).c_str()));
+    msg = doc.NewElement( "advanced_mode" );
+    msg->LinkEndChild( doc.NewText( help.String(advanced_mode).c_str()));
     dataNode->LinkEndChild( msg );
 
-    msg = new TiXmlElement("skipfakeload");
-    msg->LinkEndChild(new TiXmlText(help.String((int) skipfakeload).c_str()));
+    msg = doc.NewElement( "advanced_smoothing" );
+    msg->LinkEndChild( doc.NewText( help.String(fullScreenEffect_badSignal).c_str()));
+    dataNode->LinkEndChild( msg );
+
+
+    msg = doc.NewElement( "usingmmmmmm" );
+    msg->LinkEndChild( doc.NewText( help.String(usingmmmmmm).c_str()));
+    dataNode->LinkEndChild( msg );
+
+    msg = doc.NewElement("ghostsenabled");
+    msg->LinkEndChild(doc.NewText(help.String((int) ghostsenabled).c_str()));
     dataNode->LinkEndChild(msg);
 
-    msg = new TiXmlElement("notextoutline");
-    msg->LinkEndChild(new TiXmlText(help.String((int) graphics.notextoutline).c_str()));
+    msg = doc.NewElement("skipfakeload");
+    msg->LinkEndChild(doc.NewText(help.String((int) skipfakeload).c_str()));
     dataNode->LinkEndChild(msg);
 
-    msg = new TiXmlElement("translucentroomname");
-    msg->LinkEndChild(new TiXmlText(help.String((int) graphics.translucentroomname).c_str()));
+    msg = doc.NewElement("notextoutline");
+    msg->LinkEndChild(doc.NewText(help.String((int) graphics.notextoutline).c_str()));
     dataNode->LinkEndChild(msg);
 
-    msg = new TiXmlElement("showmousecursor");
-    msg->LinkEndChild(new TiXmlText(help.String((int)graphics.showmousecursor).c_str()));
+    msg = doc.NewElement("translucentroomname");
+    msg->LinkEndChild(doc.NewText(help.String((int) graphics.translucentroomname).c_str()));
+    dataNode->LinkEndChild(msg);
+
+    msg = doc.NewElement("showmousecursor");
+    msg->LinkEndChild(doc.NewText(help.String((int)graphics.showmousecursor).c_str()));
     dataNode->LinkEndChild(msg);
 
     for (size_t i = 0; i < controllerButton_flip.size(); i += 1)
     {
-        msg = new TiXmlElement("flipButton");
-        msg->LinkEndChild(new TiXmlText(help.String((int) controllerButton_flip[i]).c_str()));
+        msg = doc.NewElement("flipButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_flip[i]).c_str()));
         dataNode->LinkEndChild(msg);
     }
     for (size_t i = 0; i < controllerButton_map.size(); i += 1)
     {
-        msg = new TiXmlElement("enterButton");
-        msg->LinkEndChild(new TiXmlText(help.String((int) controllerButton_map[i]).c_str()));
+        msg = doc.NewElement("enterButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_map[i]).c_str()));
         dataNode->LinkEndChild(msg);
     }
     for (size_t i = 0; i < controllerButton_esc.size(); i += 1)
     {
-        msg = new TiXmlElement("escButton");
-        msg->LinkEndChild(new TiXmlText(help.String((int) controllerButton_esc[i]).c_str()));
+        msg = doc.NewElement("escButton");
+        msg->LinkEndChild(doc.NewText(help.String((int) controllerButton_esc[i]).c_str()));
         dataNode->LinkEndChild(msg);
     }
 
-    msg = new TiXmlElement( "controllerSensitivity" );
-    msg->LinkEndChild( new TiXmlText( help.String(controllerSensitivity).c_str()));
+    msg = doc.NewElement( "controllerSensitivity" );
+    msg->LinkEndChild( doc.NewText( help.String(controllerSensitivity).c_str()));
     dataNode->LinkEndChild( msg );
 
-    FILESYSTEM_saveTiXmlDocument("saves/unlock.vvv", &doc);
+    FILESYSTEM_saveTiXml2Document("saves/unlock.vvv", doc);
 }
 
 void Game::customstart()
@@ -4795,9 +5072,12 @@ void Game::deathsequence()
     {
         i = obj.getplayer();
     }
-    obj.entities[i].colour = 1;
+    if (i > -1)
+    {
+        obj.entities[i].colour = 1;
 
-    obj.entities[i].invis = false;
+        obj.entities[i].invis = false;
+    }
     if (deathseq == 30)
     {
         if (nodeathmode)
@@ -4807,7 +5087,10 @@ void Game::deathsequence()
         }
         deathcounts++;
         music.playef(2);
-        obj.entities[i].invis = true;
+        if (i > -1)
+        {
+            obj.entities[i].invis = true;
+        }
         if (map.finalmode)
         {
             if (roomx - 41 >= 0 && roomx - 41 < 20 && roomy - 48 >= 0 && roomy - 48 < 20)
@@ -4825,15 +5108,18 @@ void Game::deathsequence()
             }
         }
     }
-    if (deathseq == 25) obj.entities[i].invis = true;
-    if (deathseq == 20) obj.entities[i].invis = true;
-    if (deathseq == 16) obj.entities[i].invis = true;
-    if (deathseq == 14) obj.entities[i].invis = true;
-    if (deathseq == 12) obj.entities[i].invis = true;
-    if (deathseq < 10) obj.entities[i].invis = true;
+    if (i > -1)
+    {
+        if (deathseq == 25) obj.entities[i].invis = true;
+        if (deathseq == 20) obj.entities[i].invis = true;
+        if (deathseq == 16) obj.entities[i].invis = true;
+        if (deathseq == 14) obj.entities[i].invis = true;
+        if (deathseq == 12) obj.entities[i].invis = true;
+        if (deathseq < 10) obj.entities[i].invis = true;
+    }
     if (!nodeathmode)
     {
-        if (deathseq <= 1) obj.entities[i].invis = false;
+        if (i > -1 && deathseq <= 1) obj.entities[i].invis = false;
     }
     else
     {
@@ -4954,16 +5240,16 @@ void Game::starttrial( int t )
 
 void Game::loadquick()
 {
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/qsave.vvv", &doc)) return;
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/qsave.vvv", doc)) return;
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -4971,10 +5257,10 @@ void Game::loadquick()
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -5181,16 +5467,16 @@ void Game::customloadquick(std::string savfile)
     }
 
     std::string levelfile = savfile.substr(7);
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument(("saves/"+levelfile+".vvv").c_str(), &doc)) return;
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document(("saves/"+levelfile+".vvv").c_str(), doc)) return;
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -5198,10 +5484,10 @@ void Game::customloadquick(std::string savfile)
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -5429,20 +5715,20 @@ void Game::customloadquick(std::string savfile)
 
 void Game::loadsummary()
 {
-    TiXmlDocument docTele;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/tsave.vvv", &docTele))
+    tinyxml2::XMLDocument docTele;
+    if (!FILESYSTEM_loadTiXml2Document("saves/tsave.vvv", docTele))
     {
         telesummary = "";
     }
     else
     {
-        TiXmlHandle hDoc(&docTele);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&docTele);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
 
         {
-            pElem=hDoc.FirstChildElement().Element();
+            pElem=hDoc.FirstChildElement().ToElement();
             // should always have a valid root but handle gracefully if it does
             if (!pElem)
             {
@@ -5450,13 +5736,13 @@ void Game::loadsummary()
             }
 
             // save this for later
-            hRoot=TiXmlHandle(pElem);
+            hRoot=tinyxml2::XMLHandle(pElem);
         }
         int l_minute, l_second, l_hours;
         l_minute = l_second= l_hours = 0;
         int l_saveX = 0;
         int l_saveY = 0;
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -5518,20 +5804,20 @@ void Game::loadsummary()
         tele_currentarea = map.currentarea(map.area(l_saveX, l_saveY));
     }
 
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/qsave.vvv", &doc))
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/qsave.vvv", doc))
     {
         quicksummary = "";
     }
     else
     {
-        TiXmlHandle hDoc(&doc);
-        TiXmlElement* pElem;
-        TiXmlHandle hRoot(0);
+        tinyxml2::XMLHandle hDoc(&doc);
+        tinyxml2::XMLElement* pElem;
+        tinyxml2::XMLHandle hRoot(NULL);
 
 
         {
-            pElem=hDoc.FirstChildElement().Element();
+            pElem=hDoc.FirstChildElement().ToElement();
             // should always have a valid root but handle gracefully if it does
             if (!pElem)
             {
@@ -5539,13 +5825,13 @@ void Game::loadsummary()
             }
 
             // save this for later
-            hRoot=TiXmlHandle(pElem);
+            hRoot=tinyxml2::XMLHandle(pElem);
         }
         int l_minute, l_second, l_hours;
         l_minute = l_second= l_hours = 0;
         int l_saveX = 0;
         int l_saveY = 0;
-        for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+        for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
         {
             std::string pKey(pElem->Value());
             const char* pText = pElem->GetText() ;
@@ -5636,19 +5922,18 @@ void Game::savetele()
         return;
     }
 
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
 
@@ -5659,8 +5944,8 @@ void Game::savetele()
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
-    msg = new TiXmlElement( "worldmap" );
-    msg->LinkEndChild( new TiXmlText( mapExplored.c_str() ));
+    msg = doc.NewElement( "worldmap" );
+    msg->LinkEndChild( doc.NewText( mapExplored.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string flags;
@@ -5668,8 +5953,8 @@ void Game::savetele()
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
-    msg = new TiXmlElement( "flags" );
-    msg->LinkEndChild( new TiXmlText( flags.c_str() ));
+    msg = doc.NewElement( "flags" );
+    msg->LinkEndChild( doc.NewText( flags.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
@@ -5677,8 +5962,8 @@ void Game::savetele()
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
-    msg = new TiXmlElement( "crewstats" );
-    msg->LinkEndChild( new TiXmlText( crewstatsString.c_str() ));
+    msg = doc.NewElement( "crewstats" );
+    msg->LinkEndChild( doc.NewText( crewstatsString.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string collect;
@@ -5686,50 +5971,50 @@ void Game::savetele()
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
-    msg = new TiXmlElement( "collect" );
-    msg->LinkEndChild( new TiXmlText( collect.c_str() ));
+    msg = doc.NewElement( "collect" );
+    msg->LinkEndChild( doc.NewText( collect.c_str() ));
     msgs->LinkEndChild( msg );
 
     //Position
 
-    msg = new TiXmlElement( "finalx" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finalx).c_str() ));
+    msg = doc.NewElement( "finalx" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finalx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "finaly" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finaly).c_str() ));
+    msg = doc.NewElement( "finaly" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finaly).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savex" );
-    msg->LinkEndChild( new TiXmlText( help.String(savex).c_str() ));
+    msg = doc.NewElement( "savex" );
+    msg->LinkEndChild( doc.NewText( help.String(savex).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savey" );
-    msg->LinkEndChild( new TiXmlText( help.String(savey).c_str() ));
+    msg = doc.NewElement( "savey" );
+    msg->LinkEndChild( doc.NewText( help.String(savey).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "saverx" );
-    msg->LinkEndChild( new TiXmlText( help.String(saverx).c_str() ));
+    msg = doc.NewElement( "saverx" );
+    msg->LinkEndChild( doc.NewText( help.String(saverx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savery" );
-    msg->LinkEndChild( new TiXmlText( help.String(savery).c_str() ));
+    msg = doc.NewElement( "savery" );
+    msg->LinkEndChild( doc.NewText( help.String(savery).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savegc" );
-    msg->LinkEndChild( new TiXmlText( help.String(savegc).c_str() ));
+    msg = doc.NewElement( "savegc" );
+    msg->LinkEndChild( doc.NewText( help.String(savegc).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savedir" );
-    msg->LinkEndChild( new TiXmlText( help.String(savedir).c_str() ));
+    msg = doc.NewElement( "savedir" );
+    msg->LinkEndChild( doc.NewText( help.String(savedir).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savepoint" );
-    msg->LinkEndChild( new TiXmlText( help.String(savepoint).c_str() ));
+    msg = doc.NewElement( "savepoint" );
+    msg->LinkEndChild( doc.NewText( help.String(savepoint).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(trinkets()).c_str() ));
+    msg = doc.NewElement( "trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(trinkets()).c_str() ));
     msgs->LinkEndChild( msg );
 
 
@@ -5737,83 +6022,83 @@ void Game::savetele()
 
     if(music.nicefade==1)
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.nicechange).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.nicechange).c_str() ));
         msgs->LinkEndChild( msg );
     }
     else
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.currentsong).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.currentsong).c_str() ));
         msgs->LinkEndChild( msg );
     }
 
-    msg = new TiXmlElement( "teleportscript" );
-    msg->LinkEndChild( new TiXmlText( teleportscript.c_str() ));
+    msg = doc.NewElement( "teleportscript" );
+    msg->LinkEndChild( doc.NewText( teleportscript.c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "companion" );
-    msg->LinkEndChild( new TiXmlText( help.String(companion).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "lastsaved" );
-    msg->LinkEndChild( new TiXmlText( help.String(lastsaved).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "supercrewmate" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(supercrewmate) ));
+    msg = doc.NewElement( "companion" );
+    msg->LinkEndChild( doc.NewText( help.String(companion).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "scmprogress" );
-    msg->LinkEndChild( new TiXmlText( help.String(scmprogress).c_str() ));
+    msg = doc.NewElement( "lastsaved" );
+    msg->LinkEndChild( doc.NewText( help.String(lastsaved).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "scmmoveme" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(scmmoveme) ));
-    msgs->LinkEndChild( msg );
-
-
-    msg = new TiXmlElement( "frames" );
-    msg->LinkEndChild( new TiXmlText( help.String(frames).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "seconds" );
-    msg->LinkEndChild( new TiXmlText( help.String(seconds).c_str() ));
+    msg = doc.NewElement( "supercrewmate" );
+    msg->LinkEndChild( doc.NewText( BoolToString(supercrewmate) ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "minutes" );
-    msg->LinkEndChild( new TiXmlText( help.String(minutes).c_str()) );
+    msg = doc.NewElement( "scmprogress" );
+    msg->LinkEndChild( doc.NewText( help.String(scmprogress).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hours" );
-    msg->LinkEndChild( new TiXmlText( help.String(hours).c_str()) );
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "deathcounts" );
-    msg->LinkEndChild( new TiXmlText( help.String(deathcounts).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "totalflips" );
-    msg->LinkEndChild( new TiXmlText( help.String(totalflips).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "hardestroom" );
-    msg->LinkEndChild( new TiXmlText( hardestroom.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hardestroomdeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(hardestroomdeaths).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "finalmode" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalmode)));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "finalstretch" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalstretch) ));
+    msg = doc.NewElement( "scmmoveme" );
+    msg->LinkEndChild( doc.NewText( BoolToString(scmmoveme) ));
     msgs->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "summary" );
+    msg = doc.NewElement( "frames" );
+    msg->LinkEndChild( doc.NewText( help.String(frames).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "seconds" );
+    msg->LinkEndChild( doc.NewText( help.String(seconds).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "minutes" );
+    msg->LinkEndChild( doc.NewText( help.String(minutes).c_str()) );
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hours" );
+    msg->LinkEndChild( doc.NewText( help.String(hours).c_str()) );
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "deathcounts" );
+    msg->LinkEndChild( doc.NewText( help.String(deathcounts).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "totalflips" );
+    msg->LinkEndChild( doc.NewText( help.String(totalflips).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "hardestroom" );
+    msg->LinkEndChild( doc.NewText( hardestroom.c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hardestroomdeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(hardestroomdeaths).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "finalmode" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.finalmode)));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "finalstretch" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.finalstretch) ));
+    msgs->LinkEndChild( msg );
+
+
+    msg = doc.NewElement( "summary" );
     std::string summary = savearea + ", " + timestring();
-    msg->LinkEndChild( new TiXmlText( summary.c_str() ));
+    msg->LinkEndChild( doc.NewText( summary.c_str() ));
     msgs->LinkEndChild( msg );
 
     telesummary = summary;
 
-    if(FILESYSTEM_saveTiXmlDocument("saves/tsave.vvv", &doc))
+    if(FILESYSTEM_saveTiXml2Document("saves/tsave.vvv", doc))
     {
         printf("Game saved\n");
     }
@@ -5833,19 +6118,18 @@ void Game::savequick()
         return;
     }
 
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
 
@@ -5856,8 +6140,8 @@ void Game::savequick()
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
-    msg = new TiXmlElement( "worldmap" );
-    msg->LinkEndChild( new TiXmlText( mapExplored.c_str() ));
+    msg = doc.NewElement( "worldmap" );
+    msg->LinkEndChild( doc.NewText( mapExplored.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string flags;
@@ -5865,8 +6149,8 @@ void Game::savequick()
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
-    msg = new TiXmlElement( "flags" );
-    msg->LinkEndChild( new TiXmlText( flags.c_str() ));
+    msg = doc.NewElement( "flags" );
+    msg->LinkEndChild( doc.NewText( flags.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
@@ -5874,8 +6158,8 @@ void Game::savequick()
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
-    msg = new TiXmlElement( "crewstats" );
-    msg->LinkEndChild( new TiXmlText( crewstatsString.c_str() ));
+    msg = doc.NewElement( "crewstats" );
+    msg->LinkEndChild( doc.NewText( crewstatsString.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string collect;
@@ -5883,50 +6167,50 @@ void Game::savequick()
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
-    msg = new TiXmlElement( "collect" );
-    msg->LinkEndChild( new TiXmlText( collect.c_str() ));
+    msg = doc.NewElement( "collect" );
+    msg->LinkEndChild( doc.NewText( collect.c_str() ));
     msgs->LinkEndChild( msg );
 
     //Position
 
-    msg = new TiXmlElement( "finalx" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finalx).c_str() ));
+    msg = doc.NewElement( "finalx" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finalx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "finaly" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finaly).c_str() ));
+    msg = doc.NewElement( "finaly" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finaly).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savex" );
-    msg->LinkEndChild( new TiXmlText( help.String(savex).c_str() ));
+    msg = doc.NewElement( "savex" );
+    msg->LinkEndChild( doc.NewText( help.String(savex).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savey" );
-    msg->LinkEndChild( new TiXmlText( help.String(savey).c_str() ));
+    msg = doc.NewElement( "savey" );
+    msg->LinkEndChild( doc.NewText( help.String(savey).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "saverx" );
-    msg->LinkEndChild( new TiXmlText( help.String(saverx).c_str() ));
+    msg = doc.NewElement( "saverx" );
+    msg->LinkEndChild( doc.NewText( help.String(saverx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savery" );
-    msg->LinkEndChild( new TiXmlText( help.String(savery).c_str() ));
+    msg = doc.NewElement( "savery" );
+    msg->LinkEndChild( doc.NewText( help.String(savery).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savegc" );
-    msg->LinkEndChild( new TiXmlText( help.String(savegc).c_str() ));
+    msg = doc.NewElement( "savegc" );
+    msg->LinkEndChild( doc.NewText( help.String(savegc).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savedir" );
-    msg->LinkEndChild( new TiXmlText( help.String(savedir).c_str() ));
+    msg = doc.NewElement( "savedir" );
+    msg->LinkEndChild( doc.NewText( help.String(savedir).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savepoint" );
-    msg->LinkEndChild( new TiXmlText( help.String(savepoint).c_str() ));
+    msg = doc.NewElement( "savepoint" );
+    msg->LinkEndChild( doc.NewText( help.String(savepoint).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(trinkets()).c_str() ));
+    msg = doc.NewElement( "trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(trinkets()).c_str() ));
     msgs->LinkEndChild( msg );
 
 
@@ -5934,82 +6218,82 @@ void Game::savequick()
 
     if(music.nicefade==1)
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.nicechange).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.nicechange).c_str() ));
         msgs->LinkEndChild( msg );
     }
     else
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.currentsong).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.currentsong).c_str() ));
         msgs->LinkEndChild( msg );
     }
 
-    msg = new TiXmlElement( "teleportscript" );
-    msg->LinkEndChild( new TiXmlText( teleportscript.c_str() ));
+    msg = doc.NewElement( "teleportscript" );
+    msg->LinkEndChild( doc.NewText( teleportscript.c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "companion" );
-    msg->LinkEndChild( new TiXmlText( help.String(companion).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "lastsaved" );
-    msg->LinkEndChild( new TiXmlText( help.String(lastsaved).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "supercrewmate" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(supercrewmate) ));
+    msg = doc.NewElement( "companion" );
+    msg->LinkEndChild( doc.NewText( help.String(companion).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "scmprogress" );
-    msg->LinkEndChild( new TiXmlText( help.String(scmprogress).c_str() ));
+    msg = doc.NewElement( "lastsaved" );
+    msg->LinkEndChild( doc.NewText( help.String(lastsaved).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "scmmoveme" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(scmmoveme) ));
+    msg = doc.NewElement( "supercrewmate" );
+    msg->LinkEndChild( doc.NewText( BoolToString(supercrewmate) ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "scmprogress" );
+    msg->LinkEndChild( doc.NewText( help.String(scmprogress).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "scmmoveme" );
+    msg->LinkEndChild( doc.NewText( BoolToString(scmmoveme) ));
     msgs->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "finalmode" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalmode) ));
+    msg = doc.NewElement( "finalmode" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.finalmode) ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "finalstretch" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.finalstretch) ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "frames" );
-    msg->LinkEndChild( new TiXmlText( help.String(frames).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "seconds" );
-    msg->LinkEndChild( new TiXmlText( help.String(seconds).c_str() ));
+    msg = doc.NewElement( "finalstretch" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.finalstretch) ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "minutes" );
-    msg->LinkEndChild( new TiXmlText( help.String(minutes).c_str()) );
+    msg = doc.NewElement( "frames" );
+    msg->LinkEndChild( doc.NewText( help.String(frames).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hours" );
-    msg->LinkEndChild( new TiXmlText( help.String(hours).c_str()) );
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "deathcounts" );
-    msg->LinkEndChild( new TiXmlText( help.String(deathcounts).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "totalflips" );
-    msg->LinkEndChild( new TiXmlText( help.String(totalflips).c_str() ));
+    msg = doc.NewElement( "seconds" );
+    msg->LinkEndChild( doc.NewText( help.String(seconds).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "hardestroom" );
-    msg->LinkEndChild( new TiXmlText( hardestroom.c_str() ));
+    msg = doc.NewElement( "minutes" );
+    msg->LinkEndChild( doc.NewText( help.String(minutes).c_str()) );
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hardestroomdeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(hardestroomdeaths).c_str() ));
+    msg = doc.NewElement( "hours" );
+    msg->LinkEndChild( doc.NewText( help.String(hours).c_str()) );
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "summary" );
+    msg = doc.NewElement( "deathcounts" );
+    msg->LinkEndChild( doc.NewText( help.String(deathcounts).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "totalflips" );
+    msg->LinkEndChild( doc.NewText( help.String(totalflips).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "hardestroom" );
+    msg->LinkEndChild( doc.NewText( hardestroom.c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hardestroomdeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(hardestroomdeaths).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "summary" );
     std::string summary = savearea + ", " + timestring();
-    msg->LinkEndChild( new TiXmlText( summary.c_str() ));
+    msg->LinkEndChild( doc.NewText( summary.c_str() ));
     msgs->LinkEndChild( msg );
 
     quicksummary = summary;
 
-    if(FILESYSTEM_saveTiXmlDocument("saves/qsave.vvv", &doc))
+    if(FILESYSTEM_saveTiXml2Document("saves/qsave.vvv", doc))
     {
         printf("Game saved\n");
     }
@@ -6023,19 +6307,18 @@ void Game::savequick()
 
 void Game::customsavequick(std::string savfile)
 {
-    TiXmlDocument doc;
-    TiXmlElement* msg;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+    tinyxml2::XMLDocument doc;
+    tinyxml2::XMLElement* msg;
+    tinyxml2::XMLDeclaration* decl = doc.NewDeclaration();
     doc.LinkEndChild( decl );
 
-    TiXmlElement * root = new TiXmlElement( "Save" );
+    tinyxml2::XMLElement * root = doc.NewElement( "Save" );
     doc.LinkEndChild( root );
 
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue(" Save file " );
+    tinyxml2::XMLComment * comment = doc.NewComment(" Save file " );
     root->LinkEndChild( comment );
 
-    TiXmlElement * msgs = new TiXmlElement( "Data" );
+    tinyxml2::XMLElement * msgs = doc.NewElement( "Data" );
     root->LinkEndChild( msgs );
 
 
@@ -6046,8 +6329,8 @@ void Game::customsavequick(std::string savfile)
     {
         mapExplored += help.String(map.explored[i]) + ",";
     }
-    msg = new TiXmlElement( "worldmap" );
-    msg->LinkEndChild( new TiXmlText( mapExplored.c_str() ));
+    msg = doc.NewElement( "worldmap" );
+    msg->LinkEndChild( doc.NewText( mapExplored.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string flags;
@@ -6055,8 +6338,8 @@ void Game::customsavequick(std::string savfile)
     {
         flags += help.String((int) obj.flags[i]) + ",";
     }
-    msg = new TiXmlElement( "flags" );
-    msg->LinkEndChild( new TiXmlText( flags.c_str() ));
+    msg = doc.NewElement( "flags" );
+    msg->LinkEndChild( doc.NewText( flags.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string moods;
@@ -6064,8 +6347,8 @@ void Game::customsavequick(std::string savfile)
     {
         moods += help.String(obj.customcrewmoods[i]) + ",";
     }
-    msg = new TiXmlElement( "moods" );
-    msg->LinkEndChild( new TiXmlText( moods.c_str() ));
+    msg = doc.NewElement( "moods" );
+    msg->LinkEndChild( doc.NewText( moods.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string crewstatsString;
@@ -6073,8 +6356,8 @@ void Game::customsavequick(std::string savfile)
     {
         crewstatsString += help.String(crewstats[i]) + ",";
     }
-    msg = new TiXmlElement( "crewstats" );
-    msg->LinkEndChild( new TiXmlText( crewstatsString.c_str() ));
+    msg = doc.NewElement( "crewstats" );
+    msg->LinkEndChild( doc.NewText( crewstatsString.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string collect;
@@ -6082,8 +6365,8 @@ void Game::customsavequick(std::string savfile)
     {
         collect += help.String((int) obj.collect[i]) + ",";
     }
-    msg = new TiXmlElement( "collect" );
-    msg->LinkEndChild( new TiXmlText( collect.c_str() ));
+    msg = doc.NewElement( "collect" );
+    msg->LinkEndChild( doc.NewText( collect.c_str() ));
     msgs->LinkEndChild( msg );
 
     std::string customcollect;
@@ -6091,54 +6374,54 @@ void Game::customsavequick(std::string savfile)
     {
         customcollect += help.String((int) obj.customcollect[i]) + ",";
     }
-    msg = new TiXmlElement( "customcollect" );
-    msg->LinkEndChild( new TiXmlText( customcollect.c_str() ));
+    msg = doc.NewElement( "customcollect" );
+    msg->LinkEndChild( doc.NewText( customcollect.c_str() ));
     msgs->LinkEndChild( msg );
 
     //Position
 
-    msg = new TiXmlElement( "finalx" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finalx).c_str() ));
+    msg = doc.NewElement( "finalx" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finalx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "finaly" );
-    msg->LinkEndChild( new TiXmlText( help.String(map.finaly).c_str() ));
+    msg = doc.NewElement( "finaly" );
+    msg->LinkEndChild( doc.NewText( help.String(map.finaly).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savex" );
-    msg->LinkEndChild( new TiXmlText( help.String(savex).c_str() ));
+    msg = doc.NewElement( "savex" );
+    msg->LinkEndChild( doc.NewText( help.String(savex).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savey" );
-    msg->LinkEndChild( new TiXmlText( help.String(savey).c_str() ));
+    msg = doc.NewElement( "savey" );
+    msg->LinkEndChild( doc.NewText( help.String(savey).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "saverx" );
-    msg->LinkEndChild( new TiXmlText( help.String(saverx).c_str() ));
+    msg = doc.NewElement( "saverx" );
+    msg->LinkEndChild( doc.NewText( help.String(saverx).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savery" );
-    msg->LinkEndChild( new TiXmlText( help.String(savery).c_str() ));
+    msg = doc.NewElement( "savery" );
+    msg->LinkEndChild( doc.NewText( help.String(savery).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savegc" );
-    msg->LinkEndChild( new TiXmlText( help.String(savegc).c_str() ));
+    msg = doc.NewElement( "savegc" );
+    msg->LinkEndChild( doc.NewText( help.String(savegc).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savedir" );
-    msg->LinkEndChild( new TiXmlText( help.String(savedir).c_str() ));
+    msg = doc.NewElement( "savedir" );
+    msg->LinkEndChild( doc.NewText( help.String(savedir).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "savepoint" );
-    msg->LinkEndChild( new TiXmlText( help.String(savepoint).c_str() ));
+    msg = doc.NewElement( "savepoint" );
+    msg->LinkEndChild( doc.NewText( help.String(savepoint).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "trinkets" );
-    msg->LinkEndChild( new TiXmlText( help.String(trinkets()).c_str() ));
+    msg = doc.NewElement( "trinkets" );
+    msg->LinkEndChild( doc.NewText( help.String(trinkets()).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "crewmates" );
-    msg->LinkEndChild( new TiXmlText( help.String(crewmates()).c_str() ));
+    msg = doc.NewElement( "crewmates" );
+    msg->LinkEndChild( doc.NewText( help.String(crewmates()).c_str() ));
     msgs->LinkEndChild( msg );
 
 
@@ -6146,80 +6429,80 @@ void Game::customsavequick(std::string savfile)
 
     if(music.nicefade==1)
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.nicechange).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.nicechange).c_str() ));
         msgs->LinkEndChild( msg );
     }
     else
     {
-        msg = new TiXmlElement( "currentsong" );
-        msg->LinkEndChild( new TiXmlText( help.String(music.currentsong).c_str() ));
+        msg = doc.NewElement( "currentsong" );
+        msg->LinkEndChild( doc.NewText( help.String(music.currentsong).c_str() ));
         msgs->LinkEndChild( msg );
     }
 
-    msg = new TiXmlElement( "teleportscript" );
-    msg->LinkEndChild( new TiXmlText( teleportscript.c_str() ));
+    msg = doc.NewElement( "teleportscript" );
+    msg->LinkEndChild( doc.NewText( teleportscript.c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "companion" );
-    msg->LinkEndChild( new TiXmlText( help.String(companion).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "lastsaved" );
-    msg->LinkEndChild( new TiXmlText( help.String(lastsaved).c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "supercrewmate" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(supercrewmate) ));
+    msg = doc.NewElement( "companion" );
+    msg->LinkEndChild( doc.NewText( help.String(companion).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "scmprogress" );
-    msg->LinkEndChild( new TiXmlText( help.String(scmprogress).c_str() ));
+    msg = doc.NewElement( "lastsaved" );
+    msg->LinkEndChild( doc.NewText( help.String(lastsaved).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "scmmoveme" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(scmmoveme) ));
+    msg = doc.NewElement( "supercrewmate" );
+    msg->LinkEndChild( doc.NewText( BoolToString(supercrewmate) ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "scmprogress" );
+    msg->LinkEndChild( doc.NewText( help.String(scmprogress).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "scmmoveme" );
+    msg->LinkEndChild( doc.NewText( BoolToString(scmmoveme) ));
     msgs->LinkEndChild( msg );
 
 
-    msg = new TiXmlElement( "frames" );
-    msg->LinkEndChild( new TiXmlText( help.String(frames).c_str() ));
+    msg = doc.NewElement( "frames" );
+    msg->LinkEndChild( doc.NewText( help.String(frames).c_str() ));
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "seconds" );
-    msg->LinkEndChild( new TiXmlText( help.String(seconds).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "minutes" );
-    msg->LinkEndChild( new TiXmlText( help.String(minutes).c_str()) );
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hours" );
-    msg->LinkEndChild( new TiXmlText( help.String(hours).c_str()) );
+    msg = doc.NewElement( "seconds" );
+    msg->LinkEndChild( doc.NewText( help.String(seconds).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "deathcounts" );
-    msg->LinkEndChild( new TiXmlText( help.String(deathcounts).c_str() ));
+    msg = doc.NewElement( "minutes" );
+    msg->LinkEndChild( doc.NewText( help.String(minutes).c_str()) );
     msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "totalflips" );
-    msg->LinkEndChild( new TiXmlText( help.String(totalflips).c_str() ));
-    msgs->LinkEndChild( msg );
-
-    msg = new TiXmlElement( "hardestroom" );
-    msg->LinkEndChild( new TiXmlText( hardestroom.c_str() ));
-    msgs->LinkEndChild( msg );
-    msg = new TiXmlElement( "hardestroomdeaths" );
-    msg->LinkEndChild( new TiXmlText( help.String(hardestroomdeaths).c_str() ));
+    msg = doc.NewElement( "hours" );
+    msg->LinkEndChild( doc.NewText( help.String(hours).c_str()) );
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "showminimap" );
-    msg->LinkEndChild( new TiXmlText( BoolToString(map.customshowmm) ));
+    msg = doc.NewElement( "deathcounts" );
+    msg->LinkEndChild( doc.NewText( help.String(deathcounts).c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "totalflips" );
+    msg->LinkEndChild( doc.NewText( help.String(totalflips).c_str() ));
     msgs->LinkEndChild( msg );
 
-    msg = new TiXmlElement( "summary" );
+    msg = doc.NewElement( "hardestroom" );
+    msg->LinkEndChild( doc.NewText( hardestroom.c_str() ));
+    msgs->LinkEndChild( msg );
+    msg = doc.NewElement( "hardestroomdeaths" );
+    msg->LinkEndChild( doc.NewText( help.String(hardestroomdeaths).c_str() ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "showminimap" );
+    msg->LinkEndChild( doc.NewText( BoolToString(map.customshowmm) ));
+    msgs->LinkEndChild( msg );
+
+    msg = doc.NewElement( "summary" );
     std::string summary = savearea + ", " + timestring();
-    msg->LinkEndChild( new TiXmlText( summary.c_str() ));
+    msg->LinkEndChild( doc.NewText( summary.c_str() ));
     msgs->LinkEndChild( msg );
 
     customquicksummary = summary;
 
     std::string levelfile = savfile.substr(7);
-    if(FILESYSTEM_saveTiXmlDocument(("saves/"+levelfile+".vvv").c_str(), &doc))
+    if(FILESYSTEM_saveTiXml2Document(("saves/"+levelfile+".vvv").c_str(), doc))
     {
         printf("Game saved\n");
     }
@@ -6233,16 +6516,16 @@ void Game::customsavequick(std::string savfile)
 
 void Game::loadtele()
 {
-    TiXmlDocument doc;
-    if (!FILESYSTEM_loadTiXmlDocument("saves/tsave.vvv", &doc)) return;
+    tinyxml2::XMLDocument doc;
+    if (!FILESYSTEM_loadTiXml2Document("saves/tsave.vvv", doc)) return;
 
-    TiXmlHandle hDoc(&doc);
-    TiXmlElement* pElem;
-    TiXmlHandle hRoot(0);
+    tinyxml2::XMLHandle hDoc(&doc);
+    tinyxml2::XMLElement* pElem;
+    tinyxml2::XMLHandle hRoot(NULL);
 
 
     {
-        pElem=hDoc.FirstChildElement().Element();
+        pElem=hDoc.FirstChildElement().ToElement();
         // should always have a valid root but handle gracefully if it does
         if (!pElem)
         {
@@ -6250,11 +6533,11 @@ void Game::loadtele()
         }
 
         // save this for later
-        hRoot=TiXmlHandle(pElem);
+        hRoot=tinyxml2::XMLHandle(pElem);
     }
 
 
-    for( pElem = hRoot.FirstChild( "Data" ).FirstChild().Element(); pElem; pElem=pElem->NextSiblingElement())
+    for( pElem = hRoot.FirstChildElement( "Data" ).FirstChild().ToElement(); pElem; pElem=pElem->NextSiblingElement())
     {
         std::string pKey(pElem->Value());
         const char* pText = pElem->GetText() ;
@@ -6783,11 +7066,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option("change description");
         option("edit scripts");
         option("change music");
+        option("editor ghosts");
         option("load level");
         option("save level");
         option("quit to main menu");
 
-        menuxoff = -50;
+        menuxoff = -46;
         menuyoff = -20;
         break;
     case Menu::ed_desc:
