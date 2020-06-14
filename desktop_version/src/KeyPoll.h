@@ -7,6 +7,8 @@
 
 #include "SDL.h"
 
+#include "Screen.h"
+
 enum Kybrd
 {
 	KEYBOARD_UP = SDLK_UP,
