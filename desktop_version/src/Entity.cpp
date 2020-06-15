@@ -3716,6 +3716,18 @@ int entityclass::getcrewman( int t )
     return 0;
 }
 
+int entityclass::getcrewmanbycolor( std::string t )
+{
+    if (t == "player") return getplayer();
+    else if (t == "cyan") return getcrewman(0);
+    else if (t == "purple") return getcrewman(1);
+    else if (t == "yellow") return getcrewman(2);
+    else if (t == "red") return getcrewman(3);
+    else if (t == "green") return getcrewman(4);
+    else if (t == "blue") return getcrewman(5);
+    else return 0;
+}
+
 int entityclass::getcustomcrewman( int t )
 {
     //Returns the index of the crewman with colour index given by t

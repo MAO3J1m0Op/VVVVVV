@@ -64,22 +64,9 @@ void scriptclass::tokenize( std::string t )
 	}
 }
 
-void scriptclass::run()
+// Runs the tokenized command in words
+void scriptclass::runinternalcommand()
 {
-	while(running && scriptdelay<=0 && !game.pausescript)
-	{
-		if (position < (int) commands.size())
-		{
-			//Let's split or command in an array of words
-			tokenize(commands[position]);
-
-			//For script assisted input
-			game.press_left = false;
-			game.press_right = false;
-			game.press_action = false;
-			game.press_map = false;
-
-			//Ok, now we run a command based on that string
 			if (words[0] == "moveplayer")
 			{
 				//USAGE: moveplayer(x offset, y offset)
@@ -968,35 +955,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "changegravity")
 			{
-				//not something I'll use a lot, I think. Doesn't need to be very robust!
-				if (words[1] == "player")
-				{
-					i=obj.getplayer();
-				}
-				else if (words[1] == "cyan")
-				{
-					i=obj.getcrewman(0);
-				}
-				else if (words[1] == "red")
-				{
-					i=obj.getcrewman(3);
-				}
-				else if (words[1] == "green")
-				{
-					i=obj.getcrewman(4);
-				}
-				else if (words[1] == "yellow")
-				{
-					i=obj.getcrewman(2);
-				}
-				else if (words[1] == "blue")
-				{
-					i=obj.getcrewman(5);
-				}
-				else if (words[1] == "purple")
-				{
-					i=obj.getcrewman(1);
-				}
+			    i = obj.getcrewmanbycolor(words[1]);
 
 				if (i > -1)
 				{
@@ -1005,34 +964,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "changedir")
 			{
-				if (words[1] == "player")
-				{
-					i=obj.getplayer();
-				}
-				else if (words[1] == "cyan")
-				{
-					i=obj.getcrewman(0);
-				}
-				else if (words[1] == "red")
-				{
-					i=obj.getcrewman(3);
-				}
-				else if (words[1] == "green")
-				{
-					i=obj.getcrewman(4);
-				}
-				else if (words[1] == "yellow")
-				{
-					i=obj.getcrewman(2);
-				}
-				else if (words[1] == "blue")
-				{
-					i=obj.getcrewman(5);
-				}
-				else if (words[1] == "purple")
-				{
-					i=obj.getcrewman(1);
-				}
+				i = obj.getcrewmanbycolor(words[1]);
 
 				if (i > -1 && ss_toi(words[2]) == 0)
 				{
@@ -1054,34 +986,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "changeai")
 			{
-				if (words[1] == "player")
-				{
-					i=obj.getplayer();
-				}
-				else if (words[1] == "cyan")
-				{
-					i=obj.getcrewman(0);
-				}
-				else if (words[1] == "red")
-				{
-					i=obj.getcrewman(3);
-				}
-				else if (words[1] == "green")
-				{
-					i=obj.getcrewman(4);
-				}
-				else if (words[1] == "yellow")
-				{
-					i=obj.getcrewman(2);
-				}
-				else if (words[1] == "blue")
-				{
-					i=obj.getcrewman(5);
-				}
-				else if (words[1] == "purple")
-				{
-					i=obj.getcrewman(1);
-				}
+				i = obj.getcrewmanbycolor(words[1]);
 
 				if (words[2] == "followplayer") words[2] = "10";
 				if (words[2] == "followpurple") words[2] = "11";
@@ -1136,34 +1041,7 @@ void scriptclass::run()
 			}
 			else if (words[0] == "changecolour")
 			{
-				if (words[1] == "player")
-				{
-					i=obj.getplayer();
-				}
-				else if (words[1] == "cyan")
-				{
-					i=obj.getcrewman(0);
-				}
-				else if (words[1] == "red")
-				{
-					i=obj.getcrewman(3);
-				}
-				else if (words[1] == "green")
-				{
-					i=obj.getcrewman(4);
-				}
-				else if (words[1] == "yellow")
-				{
-					i=obj.getcrewman(2);
-				}
-				else if (words[1] == "blue")
-				{
-					i=obj.getcrewman(5);
-				}
-				else if (words[1] == "purple")
-				{
-					i=obj.getcrewman(1);
-				}
+				i = obj.getcrewmanbycolor(words[1]);
 
 				if (i > -1)
 				{
@@ -1610,63 +1488,8 @@ void scriptclass::run()
 			}
 			else if (words[0] == "face")
 			{
-				if (words[1] == "player")
-				{
-					i=obj.getplayer();
-				}
-				else if (words[1] == "cyan")
-				{
-					i=obj.getcrewman(0);
-				}
-				else if (words[1] == "red")
-				{
-					i=obj.getcrewman(3);
-				}
-				else if (words[1] == "green")
-				{
-					i=obj.getcrewman(4);
-				}
-				else if (words[1] == "yellow")
-				{
-					i=obj.getcrewman(2);
-				}
-				else if (words[1] == "blue")
-				{
-					i=obj.getcrewman(5);
-				}
-				else if (words[1] == "purple")
-				{
-					i=obj.getcrewman(1);
-				}
-
-				if (words[2] == "player")
-				{
-					j=obj.getplayer();
-				}
-				else if (words[2] == "cyan")
-				{
-					j=obj.getcrewman(0);
-				}
-				else if (words[2] == "red")
-				{
-					j=obj.getcrewman(3);
-				}
-				else if (words[2] == "green")
-				{
-					j=obj.getcrewman(4);
-				}
-				else if (words[2] == "yellow")
-				{
-					j=obj.getcrewman(2);
-				}
-				else if (words[2] == "blue")
-				{
-					j=obj.getcrewman(5);
-				}
-				else if (words[2] == "purple")
-				{
-					j=obj.getcrewman(1);
-				}
+				i = obj.getcrewmanbycolor(words[1]);
+				j = obj.getcrewmanbycolor(words[2]);
 
 				if (i > -1 && j > -1 && obj.entities[j].xp > obj.entities[i].xp + 5)
 				{
@@ -2557,6 +2380,26 @@ void scriptclass::run()
 					}
 				}
 			}
+}
+
+void scriptclass::run()
+{
+	std::vector<std::string> words;
+	while(running && scriptdelay<=0 && !game.pausescript)
+	{
+		if (position < (int) commands.size())
+		{
+			//Let's split or command in an array of words
+			tokenize(commands[position]);
+
+			//For script assisted input
+			game.press_left = false;
+			game.press_right = false;
+			game.press_action = false;
+			game.press_map = false;
+
+			//Ok, now we run a command based on that string
+			runinternalcommand();
 
 			position++;
 		}

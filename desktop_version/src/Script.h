@@ -45,6 +45,8 @@ public:
 
     void hardreset();
 
+    void runinternalcommand();
+
     void loadcustom(std::string t);
 
     //Script contents
