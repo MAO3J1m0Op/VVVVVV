@@ -1372,7 +1372,7 @@ void Game::updatestate()
             //Time Trial Complete!
             obj.removetrigger(82);
             hascontrol = false;
-            timetrialresulttime = seconds + (minutes * 60);
+            timetrialresulttime = seconds + (minutes * 60) + (hours * 60 * 60);
             timetrialrank = 0;
             if (timetrialresulttime <= timetrialpar) timetrialrank++;
             if (trinkets() >= timetrialshinytarget) timetrialrank++;
@@ -6828,7 +6828,7 @@ std::string Game::resulttimestring()
 {
     //given result time in seconds:
     std::string tempstring = "";
-    if (timetrialresulttime > 60)
+    if (timetrialresulttime >= 60)
     {
         tempstring = help.twodigits(int((timetrialresulttime - (timetrialresulttime % 60)) / 60)) + ":"
                      + help.twodigits(timetrialresulttime % 60);
@@ -7631,6 +7631,7 @@ void Game::quittomenu()
 {
     gamestate = TITLEMODE;
     graphics.fademode = 4;
+    FILESYSTEM_unmountassets(); // should be before music.play(6)
     music.play(6);
     graphics.backgrounddrawn = false;
     map.tdrawback = true;
@@ -7669,7 +7670,6 @@ void Game::quittomenu()
         createmenu(Menu::mainmenu);
     }
     script.hardreset();
-    FILESYSTEM_unmountassets();
 }
 
 void Game::returntolab()
