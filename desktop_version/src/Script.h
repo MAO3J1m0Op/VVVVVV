@@ -17,6 +17,12 @@ struct Script
 
 class scriptclass
 {
+    //Script contents
+    std::vector<std::string> commands;
+    std::vector<std::string> words;
+    std::vector<std::string> txt;
+    std::string scriptname;
+
     int position;
     int looppoint, loopcount;
 
@@ -63,11 +69,6 @@ public:
 
     void loadcustom(std::string t);
 
-    //Script contents
-    std::vector<std::string> commands;
-    std::vector<std::string> words;
-    std::vector<std::string> txt;
-    std::string scriptname;
     bool running;
 
     //Custom level stuff

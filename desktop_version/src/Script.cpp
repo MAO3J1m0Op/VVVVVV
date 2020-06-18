@@ -2384,7 +2384,6 @@ void scriptclass::runinternalcommand()
 
 void scriptclass::run()
 {
-	std::vector<std::string> words;
 	while(running && scriptdelay<=0 && !game.pausescript)
 	{
 		if (position < (int) commands.size())
