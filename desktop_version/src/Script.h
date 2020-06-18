@@ -17,6 +17,20 @@ struct Script
 
 class scriptclass
 {
+    int position;
+    int looppoint, loopcount;
+
+    int scriptdelay;
+    std::string tempword;
+    std::string currentletter;
+
+    //Textbox stuff
+    int textx;
+    int texty;
+    int r,g,b;
+
+    //Misc
+    int i, j, k;
 public:
 
 
@@ -54,21 +68,7 @@ public:
     std::vector<std::string> words;
     std::vector<std::string> txt;
     std::string scriptname;
-    int position;
-    int looppoint, loopcount;
-
-    int scriptdelay;
     bool running;
-    std::string tempword;
-    std::string currentletter;
-
-    //Textbox stuff
-    int textx;
-    int texty;
-    int r,g,b;
-
-    //Misc
-    int i, j, k;
 
     //Custom level stuff
     std::vector<Script> customscripts;
