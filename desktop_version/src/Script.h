@@ -23,7 +23,7 @@ class scriptclass
     std::vector<std::string> txt;
     std::string scriptname;
 
-    int position;
+    size_t position;
     int looppoint, loopcount;
 
     int scriptdelay;

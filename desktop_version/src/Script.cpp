@@ -2386,7 +2386,7 @@ void scriptclass::run()
 {
 	while(running && scriptdelay<=0 && !game.pausescript)
 	{
-		if (position < (int) commands.size())
+		if (position < commands.size())
 		{
 			//Let's split or command in an array of words
 			tokenize(commands[position]);
