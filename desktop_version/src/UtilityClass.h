@@ -13,7 +13,18 @@ std::vector<std::string> split(const std::string &s, char delim);
 
 bool is_positive_num(const std::string& str, bool hex);
 
+bool endsWith(const std::string& str, const std::string& suffix);
+
 #define INBOUNDS(index, vector) ((int) index >= 0 && (int) index < (int) vector.size())
+#define INBOUNDS_ARR(index, array) ((int) index >= 0 && (int) index < (int) SDL_arraysize(array))
+
+#define WHINE_ONCE(message) \
+    static bool whine = true; \
+    if (whine) \
+    { \
+        whine = false; \
+        puts(message); \
+    }
 
 
 //helperClass
@@ -40,10 +51,7 @@ public:
     int glow;
     int slowsine;
     int glowdir;
-    int globaltemp;
-    int temp;
-    int temp2;
-    std::vector<int> splitseconds;
+    int splitseconds[30];
 };
 
 extern UtilityClass help;

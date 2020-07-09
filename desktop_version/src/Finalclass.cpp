@@ -2,14 +2,12 @@
 
 #include "MakeAndPlay.h"
 
-std::vector<int> finalclass::loadlevel(int rx, int ry)
+const int* finalclass::loadlevel(int rx, int ry)
 {
 	int t;
 
 	t = rx + (ry * 100);
-	std::vector<int> result;
-	coin = 0;
-	rcol = 0;
+	const int* result;
 	warpx = false;
 	warpy = false;
 
@@ -62,7 +60,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpx = true;
 		roomname = "1954 World Cup Vinyl";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -110,7 +108,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(256, 128, 10, 0, 51503);  // (savepoint)
 		warpy = true;
 		roomname = "The V Stooges";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -158,7 +156,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "glitch";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -208,7 +206,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "glitch";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -256,7 +254,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "change";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -306,7 +304,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "change";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -353,7 +351,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "change";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -410,7 +408,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "Vertigo";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -464,7 +462,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "The Voon Show";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -510,7 +508,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "glitch";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -559,7 +557,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpx = true;
 		roomname = "1950 Silverstone Grand V";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -618,7 +616,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		warpx = true;
 		warpy = true;
 		roomname = "DIY V Repair";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	};
 
@@ -658,7 +656,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		740,740,740,740,740,740,740,740,740,740,218,98,220,218,98,220,740,740,740,740,740,740,740,740,218,98,220,218,98,220,740,740,740,740,740,740,740,740,740,740,
 		};
 		roomname = "Party Time!";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -706,7 +704,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(96, 88, 1, 3, 8);  // Enemy
 		obj.createentity(72, 32, 10, 0, 52431);  // (savepoint)
 		roomname = "Upstairs, Downstairs";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -763,7 +761,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		//obj.createentity(224, 168, 1, 1, 5, 0, 120, 320, 200);  // Enemy, bounded
 		obj.createentity(24, 184, 10, 1, 52440);  // (savepoint)
 		roomname = "Timeslip";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -808,7 +806,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(128, 88, 10, 1, 52451);  // (savepoint)
 		obj.createentity(160, 76, 11, 96);  // (horizontal gravity line)
 		roomname = "Three's Company";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -855,7 +853,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(120, 192, 2, 3, 6);  // Platform
 		obj.createentity(264, 48, 2, 2, 6);  // Platform
 		roomname = "Cosmic Creepers";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	};
 
@@ -903,7 +901,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(123, 128, 12, 88);  // (vertical gravity line)
 
 		roomname = "The Villi People";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -956,7 +954,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpx = true;
 		roomname = "change";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1006,7 +1004,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpx = true;
 		roomname = "change";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1056,7 +1054,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(272, 80, 3);  //Disappearing Platform
 		obj.createentity(304, 80, 3);  //Disappearing Platform
 		roomname = "The Last Straw";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1107,7 +1105,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(128, 88, 3);  //Disappearing Platform
 		obj.createentity(160, 88, 3);  //Disappearing Platform
 		roomname = "W";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1153,7 +1151,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(120, 128, 9, 19);  // (shiny trinket)
 
 		roomname="V";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1194,7 +1192,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		740,740,740,740,740,740,740,740,740,740,740,740,740,740,740,740,0,0,0,0,0,0,0,0,740,740,740,740,740,740,740,740,740,740,740,740,740,740,740,740,
 		};
 		roomname = "VV";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1235,7 +1233,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		740,740,740,740,740,740,740,740,740,740,740,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,740,740,740,740,740,740,740,740,740,740,740,
 		};
 		roomname = "VVV";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1276,7 +1274,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		740,740,740,740,740,740,740,740,740,740,740,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,740,740,740,740,740,740,740,740,740,740,740,
 		};
 		roomname = "VVVV";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1317,7 +1315,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		};
 
 		roomname = "VVVVV";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1370,7 +1368,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 			obj.createblock(1, 0, 0, 320, 120, 3500); //Game complete
 		}
 		roomname = "VVVVVV";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1411,10 +1409,9 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		98,98,220,218,98,98,98,98,98,98,98,98,98,98,98,98,98,220,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
 
-		rcol = 6;
 		warpy = true;
 		roomname = "Temporary Fault...";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1455,7 +1452,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		};
 		warpy = true;
 		roomname = "Do Not Adjust the V-hold";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1503,7 +1500,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "Regular Service Will Return Shortly";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1546,7 +1543,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(120, 116, 11, 80);  // (horizontal gravity line)
 		warpy = true;
 		roomname = "Origami Room";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1591,7 +1588,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		obj.createentity(40, 80, 10, 1, 50500);  // (savepoint)
 
 		roomname = "Teleporter Divot";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1642,7 +1639,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 				obj.createblock(1, 26*8, 0, 32, 240, 36);
 			}
 		}
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1689,7 +1686,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		{
 			obj.createblock(1, 40, 0, 32, 240, 82);
 		}
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1732,7 +1729,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "Whee Sports";
 		warpx = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1774,7 +1771,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "Whizz Down The Shaft";
 		warpx = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1821,7 +1818,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "The Gravitron";
 		warpx = true; //warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1891,7 +1888,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		warpx = true;
 
 		game.swnmode = false;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1936,7 +1933,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "House of Mirrors";
 		warpx = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1982,7 +1979,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "Now Take My Lead";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2031,7 +2028,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "What Are You Waiting For?";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2081,7 +2078,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "Don't Get Ahead of Yourself!";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2131,7 +2128,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "Very Good";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2177,7 +2174,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		roomname = "Must I Do Everything For You?";
 		warpy = true;
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2226,7 +2223,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "Now Stay Close To Me...";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2270,7 +2267,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "...But Not Too Close";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2312,7 +2309,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		warpy = true;
 		roomname = "Don't Be Afraid";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2359,7 +2356,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		}
 		warpy = true;
 		roomname = "Do as I Say...";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2405,7 +2402,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "...Not as I Do";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2452,7 +2449,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 		}
 		warpy = true;
 		roomname = "Mind Your Head";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2502,7 +2499,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "Do Try To Keep Up";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2546,7 +2543,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "You're Falling Behind";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2595,7 +2592,7 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 		roomname = "Class Dismissed!";
 		warpy = true;
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2604,12 +2601,12 @@ std::vector<int> finalclass::loadlevel(int rx, int ry)
 
 	default:
 	{
-		const int contents[1200] = {0};
+		static const int contents[1200] = {0};
 		roomname = "Outer Space";
 
 		//game.test = true;
 		//game.teststring = "ERROR: Map not found in Final Area";
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 	}

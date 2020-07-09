@@ -19,7 +19,7 @@ class scriptclass
 {
     //Script contents
     std::vector<std::string> commands;
-    std::vector<std::string> words;
+    std::string words[40];
     std::vector<std::string> txt;
     std::string scriptname;
 
@@ -42,18 +42,18 @@ public:
 
     scriptclass();
 
-    void load(std::string t);
-    void loadother(std::string t);
+    void load(const std::string& name);
+    void loadother(const char* t);
+    void loadcustom(const std::string& t);
 
-
-    void inline add(std::string t)
+    void inline add(const std::string& t)
     {
         commands.push_back(t);
     }
 
     void clearcustom();
 
-    void tokenize(std::string t);
+    void tokenize(const std::string& t);
 
     void run();
 

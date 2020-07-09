@@ -6,6 +6,32 @@
 #include <vector>
 #include <string>
 #include "Script.h"
+#include "Graphics.h"
+
+// Text entry field type
+enum textmode {
+  TEXT_NONE,
+
+  // In-editor text fields
+  TEXT_LOAD,
+  TEXT_SAVE,
+  TEXT_ROOMNAME,
+  TEXT_SCRIPT,
+  TEXT_ROOMTEXT,
+  TEXT_GOTOROOM,
+  LAST_EDTEXT = TEXT_GOTOROOM,
+
+  // Settings-mode text fields
+  TEXT_TITLE,
+  TEXT_DESC,
+  TEXT_WEBSITE,
+  TEXT_CREATOR,
+  NUM_TEXTMODES,
+
+  // Text modes with an entity
+  FIRST_ENTTEXT = TEXT_SCRIPT,
+  LAST_ENTTEXT = TEXT_ROOMTEXT
+};
 
 class edentities{
 public:
@@ -81,6 +107,7 @@ struct GhostInfo {
     int x; // .xp
     int y; // .yp
     int col; // .colour
+    Uint32 realcol;
     int frame; // .drawframe
 };
 
@@ -101,9 +128,9 @@ class editorclass{
   void getDirectoryData();
   bool getLevelMetaData(std::string& filename, LevelMetaData& _data );
 
-  void saveconvertor();
   void reset();
-  std::vector<int> loadlevel(int rxi, int ryi);
+  void getlin(const enum textmode mode, const std::string& prompt, std::string* ptr);
+  const int* loadlevel(int rxi, int ryi);
 
   void placetile(int x, int y, int t);
 
@@ -132,6 +159,11 @@ class editorclass{
 
   int backmatch(int x, int y);
 
+  void switch_tileset(const bool reversed = false);
+  void switch_tilecol(const bool reversed = false);
+  void clamp_tilecol(const int rx, const int ry, const bool wrap = false);
+  void switch_enemy(const bool reversed = false);
+
   bool load(std::string& _path);
   bool save(std::string& _path);
   void generatecustomminimap();
@@ -150,20 +182,23 @@ class editorclass{
   int getlevelcol(int t);
   int getenemycol(int t);
   int entcol;
+  Uint32 entcolreal;
 
   //Colouring stuff
   int getwarpbackground(int rx, int ry);
 
   std::vector<std::string> getLevelDirFileNames( );
-  std::vector <int> contents;
-  std::vector <int> vmult;
+  static const int maxwidth = 20, maxheight = 20; //Special; the physical max the engine allows
+  static const int numrooms = maxwidth * maxheight;
+  int contents[40 * 30 * numrooms];
+  int vmult[30 * maxheight];
   int numtrinkets();
   int numcrewmates();
-  edlevelclass level[400]; //Maxwidth*maxheight
-  int kludgewarpdir[400]; //Also maxwidth*maxheight
+  edlevelclass level[numrooms]; //Maxwidth*maxheight
+  int kludgewarpdir[numrooms]; //Also maxwidth*maxheight
 
-  int temp;
   int notedelay;
+  int oldnotedelay;
   std::string note;
   std::string keybuffer;
   std::string filename;
@@ -175,14 +210,17 @@ class editorclass{
   int levx, levy;
   int entframe, entframedelay;
 
-  bool roomtextmod;
-
-  bool scripttextmod;
-  int textent;
   int scripttexttype;
   std::string oldenttext;
 
-  bool xmod, zmod, cmod, vmod, bmod, hmod, spacemod, warpmod, roomnamemod, textentry, savemod, loadmod;
+  enum textmode textmod; // In text entry
+  std::string* textptr; // Pointer to text we're changing
+  std::string textdesc; // Description (for editor mode text fields)
+  union {
+    int desc; // Which description row we're changing
+    int textent; // Entity ID for text prompt
+  };
+  bool xmod, zmod, cmod, vmod, bmod, hmod, spacemod, warpmod, textentry;
   bool titlemod, creatormod, desc1mod, desc2mod, desc3mod, websitemod;
 
   int roomnamehide;
@@ -199,7 +237,6 @@ class editorclass{
 
   int levmusic;
   int mapwidth, mapheight; //Actual width and height of stage
-  int maxwidth, maxheight; //Special; the physical max the engine allows
 
   int version;
 
@@ -235,7 +272,12 @@ class editorclass{
   int dmtile;
   int dmtileeditor;
 
+  Uint32 getonewaycol(const int rx, const int ry);
+  Uint32 getonewaycol();
+  bool onewaycol_override;
+
   int returneditoralpha;
+  int oldreturneditoralpha;
 
   std::vector<GhostInfo> ghosts;
   int currentghosts;
@@ -254,11 +296,13 @@ void fillbox(int x, int y, int x2, int y2, int c);
 
 void fillboxabs(int x, int y, int x2, int y2, int c);
 
+#if !defined(NO_EDITOR)
 void editorrender();
 
 void editorlogic();
 
 void editorinput();
+#endif
 
 extern editorclass ed;
 

@@ -5,14 +5,13 @@
 #include "Entity.h"
 
 #include <string>
-#include <vector>
 
 class warpclass
 {
 public:
-	std::vector<int> loadlevel(int rx, int ry);
+	const int* loadlevel(int rx, int ry);
 	std::string roomname;
-	int coin, rcol;
+	int rcol;
 	bool warpx, warpy;
 };
 

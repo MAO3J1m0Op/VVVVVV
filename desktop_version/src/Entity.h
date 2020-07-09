@@ -184,9 +184,9 @@ public:
 
 
     std::vector<blockclass> blocks;
-    std::vector<bool> flags;
-    std::vector<bool> collect;
-    std::vector<bool> customcollect;
+    bool flags[100];
+    bool collect[100];
+    bool customcollect[100];
 
     bool skipblocks, skipdirblocks;
 
@@ -199,6 +199,7 @@ public:
 
     //Trophy Text
     int trophytext, trophytype;
+    int oldtrophytext;
 
     //Secret lab scripts
     int altstates;
@@ -208,7 +209,7 @@ public:
     int customplatformtile;
     bool customwarpmode, customwarpmodevon, customwarpmodehon;
     std::string customscript;
-    int customcrewmoods[6];
+    bool customcrewmoods[Game::numcrew];
 };
 
 extern entityclass obj;

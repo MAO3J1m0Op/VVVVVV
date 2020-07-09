@@ -25,6 +25,8 @@ void BlitSurfaceStandard( SDL_Surface* _src, SDL_Rect* _srcRect, SDL_Surface* _d
 
 void BlitSurfaceColoured( SDL_Surface* _src, SDL_Rect* _srcRect, SDL_Surface* _dest, SDL_Rect* _destRect, colourTransform& ct );
 
+void BlitSurfaceTinted( SDL_Surface* _src, SDL_Rect* _srcRect, SDL_Surface* _dest, SDL_Rect* _destRect, colourTransform& ct );
+
 void FillRect( SDL_Surface* surface, const int x, const int y, const int w, const int h, const int r, int g, int b );
 
 void FillRect( SDL_Surface* surface, const int r, int g, int b );
@@ -46,6 +48,7 @@ void ScrollSurface(SDL_Surface* _src, int pX, int py);
 SDL_Surface * FlipSurfaceHorizontal(SDL_Surface* _src);
 SDL_Surface * FlipSurfaceVerticle(SDL_Surface* _src);
 SDL_Surface * ScaleSurfaceSlow( SDL_Surface *_surface, int Width, int Height );
+void UpdateFilter();
 SDL_Surface* ApplyFilter( SDL_Surface* _src );
 
 #endif /* GRAPHICSUTIL_H */

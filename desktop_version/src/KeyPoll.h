@@ -40,7 +40,6 @@ public:
 
 	bool resetWindow;
 
-	bool escapeWasPressedPreviously;
 	bool quitProgram;
 	bool toggleFullscreen;
 
@@ -70,11 +69,12 @@ public:
 	int mx, my;
 
 	bool textentrymode;
-	int keyentered, keybufferlen;
 	bool pressedbackspace;
 	std::string keybuffer;
 
 	bool linealreadyemptykludge;
+
+	Uint64 pauseStart;
 
 private:
 	std::map<SDL_JoystickID, SDL_GameController*> controllers;

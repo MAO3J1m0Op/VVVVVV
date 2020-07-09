@@ -2,16 +2,7 @@
 
 #include "MakeAndPlay.h"
 
-void otherlevelclass::addline(std::string t)
-{
-	Roomtext text;
-	text.x = 0;
-	text.y = 0;
-	text.text = t;
-	roomtext.push_back(text);
-}
-
-std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
+const int* otherlevelclass::loadlevel(int rx, int ry)
 {
 	int t;
 	roomtileset = 1;
@@ -19,11 +10,8 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 	rx -= 100;
 	ry -= 100;
 	t = rx + (ry * 100);
-	std::vector<int> result;
+	const int* result;
 	roomname = "";
-
-	roomtext.clear();
-	roomtexton = false;
 
 	switch(t)
 	{
@@ -68,7 +56,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createentity(216, 144, 20, 1);
 
 		obj.createblock(5, 216-4, 144, 20, 16, 8);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -107,7 +95,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -146,7 +134,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,614,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,614,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -185,7 +173,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		480,480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -224,7 +212,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,695,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,695,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -263,7 +251,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -302,7 +290,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,0,
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -341,7 +329,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,623,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,623,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -380,7 +368,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,0,0,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -421,7 +409,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 144, 10, 1, 9000);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -462,7 +450,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(224, 96, 10, 0, 10000);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -504,7 +492,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(56, 32, 13); //Warp Token
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -543,7 +531,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -582,7 +570,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -621,7 +609,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -660,7 +648,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,620,0,0,0,0,0,698,0,0,0,0,0,0,0,0,0,0,0,0,698,0,0,0,0,0,0,0,0,0,0,0,0,
 		498,498,498,498,498,498,498,498,620,0,0,0,0,0,698,0,0,0,0,0,0,0,0,0,0,0,0,698,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -701,7 +689,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(120, 40, 14); //Teleporter!
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -740,7 +728,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -779,7 +767,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -818,7 +806,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		0,0,0,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -859,7 +847,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(144, 136, 10, 1, 4010);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -900,7 +888,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(88, 104, 10, 1, 106010);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -939,7 +927,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -978,7 +966,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1019,7 +1007,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 64, 10, 0, 9010);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1060,7 +1048,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(208, 120, 9, 15);  // (shiny trinket)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1108,7 +1096,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(96, 80, 13); //Warp Token
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1147,7 +1135,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,689,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,689,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1188,7 +1176,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(112, 152, 10, 1, 13010);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1227,7 +1215,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,683,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,
 		0,0,0,0,0,0,0,0,0,683,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1266,7 +1254,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,692,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		0,0,0,0,0,0,0,0,0,692,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1307,7 +1295,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(280, 120, 10, 1, 16010);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1348,7 +1336,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(56, 32, 10, 1, 2020);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1387,7 +1375,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1426,7 +1414,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1467,7 +1455,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(40, 88, 10, 1, 6020);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1506,7 +1494,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,695,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,695,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1545,7 +1533,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,
 		113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1611,7 +1599,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 			{
 				obj.createblock(1, 304, 0, 16, 240, 48);
 			}
-			result.insert(result.end(), contents, contents+1200);
+			result = contents;
 		}
 		else
 		{
@@ -1650,7 +1638,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 			};
 
 			obj.createentity(90, 52, 26, 0);  // (super warp)
-			result.insert(result.end(), contents, contents+1200);
+			result = contents;
 		}
 
 		break;
@@ -1692,7 +1680,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(64, 64, 14); //Teleporter!
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1731,7 +1719,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1770,7 +1758,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1809,7 +1797,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1850,7 +1838,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(240, 96, 10, 0, 15020);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1891,7 +1879,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 96, 9, 16);  // (shiny trinket)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1932,7 +1920,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(24, 192, 10, 1, 3030);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -1971,7 +1959,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,680,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,680,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2010,7 +1998,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,692,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,692,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2049,7 +2037,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,689,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,689,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2088,7 +2076,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2129,7 +2117,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(248, 168, 10, 1, 9030);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2229,7 +2217,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(152, 40, 21, 0); //Terminal (jukebox instructions)
 		obj.createblock(5, 152 - 4, 40, 20, 16, 24);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2268,7 +2256,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,
 		107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,107,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2309,7 +2297,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(128, 160, 10, 1, 113030);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2351,7 +2339,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(192, 96, 10, 0, 114030);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2390,7 +2378,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2429,7 +2417,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2468,7 +2456,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2507,7 +2495,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2546,7 +2534,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		110,110,110,110,110,110,110,151,191,191,191,152,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,232,0,0,0,230,110,110,110,110,
 		110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,110,151,191,191,191,152,110,110,110,110,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2593,7 +2581,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createentity(232, 184, 20, 1); //Terminal
 		obj.createentity(208, 184, 20, 1); //Terminal
 		obj.createblock(5, 208 + 4, 184, 56, 16, 23);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2632,7 +2620,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		116,116,116,116,116,116,116,116,116,116,116,116,116,116,116,116,116,238,0,0,0,0,0,0,0,0,0,0,236,116,116,116,116,116,116,116,116,116,116,116,
 		116,116,116,116,116,116,116,116,116,116,116,116,116,116,116,116,116,238,0,0,0,0,0,0,0,0,0,0,236,116,116,116,116,116,116,116,116,116,116,116,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2671,7 +2659,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,683,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,683,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2712,7 +2700,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(248, 112, 10, 1, 114040);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2753,7 +2741,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(104, 176, 10, 1, 115040);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2794,7 +2782,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(16, 40, 10, 1, 15040);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2833,7 +2821,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2874,7 +2862,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(272, 128, 10, 0, 3050);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2913,7 +2901,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,611,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,611,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2952,7 +2940,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -2991,7 +2979,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3030,7 +3018,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3069,7 +3057,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3108,7 +3096,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		104,104,104,104,104,104,104,104,104,226,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		104,104,104,104,104,104,104,104,104,226,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3147,7 +3135,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		104,104,104,104,104,104,104,104,104,226,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		104,104,104,104,104,104,104,104,104,226,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3186,7 +3174,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,235,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,113,235,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3225,7 +3213,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,680,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,680,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3266,7 +3254,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(184, 176, 10, 1, 13050);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3305,7 +3293,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3347,7 +3335,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(72, 16, 9, 14);  // (shiny trinket)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3389,7 +3377,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(224, 160, 13); //Warp Token
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3428,7 +3416,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3469,7 +3457,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 152, 10, 0, 103060);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3510,7 +3498,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(128, 120, 10, 1, 4060);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3549,7 +3537,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3588,7 +3576,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3629,7 +3617,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(64, 88, 10, 1, 7060);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3668,7 +3656,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3707,7 +3695,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3748,7 +3736,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 128, 10, 0, 10060);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3787,7 +3775,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3826,7 +3814,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,689,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,689,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3865,7 +3853,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,527,567,568,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3904,7 +3892,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3952,7 +3940,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		}
 
 		obj.createentity(128, 216, 10, 1, 116061);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -3991,7 +3979,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,603,483,483,605,0,0,0,0,603,483,483,605,0,0,0,0,603,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,603,483,483,605,0,0,0,0,603,483,483,605,0,0,0,0,603,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4030,7 +4018,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4072,7 +4060,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(192, 104, 13); //Warp Token
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4113,7 +4101,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(88, 136, 10, 0, 103070);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4152,7 +4140,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4193,7 +4181,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(208, 128, 10, 1, 4070);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4232,7 +4220,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,600,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,600,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4271,7 +4259,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,614,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,614,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4310,7 +4298,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,611,0,0,0,0,0,0,0,0,0,0,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,611,0,0,0,0,0,0,0,0,0,0,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4349,7 +4337,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,600,480,480,480,480,480,480,480,480,480,
 		480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,600,480,480,480,480,480,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4390,7 +4378,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(64, 112, 14); //Teleporter!
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4429,7 +4417,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,615,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,615,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4468,7 +4456,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4509,7 +4497,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(48, 192, 10, 1, 14070);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4548,7 +4536,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4587,7 +4575,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,611,690,690,690,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,611,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4626,7 +4614,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,606,486,486,486,486,486,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,606,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4665,7 +4653,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4704,7 +4692,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,623,0,0,0,0,0,621,501,501,501,501,501,501,501,501,501,501,501,
 		501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,501,623,0,0,0,0,0,621,501,501,501,501,501,501,501,501,501,501,501,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4745,7 +4733,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(80, 40, 10, 1, 5080);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4787,7 +4775,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(96, 72, 13); //Warp Token
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4826,7 +4814,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,614,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,614,0,0,0,0,612,492,492,492,492,492,492,
 		492,492,492,492,492,492,614,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,614,0,0,0,0,612,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4865,7 +4853,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4904,7 +4892,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,614,0,0,0,0,612,492,492,492,492,492,492,492,492,614,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,
 		492,492,492,492,492,492,614,0,0,0,0,612,492,492,492,492,492,492,492,492,614,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4948,7 +4936,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createentity(120, 128, 20, 1);  // (terminal)
 
 		obj.createblock(5, 120-4, 128, 20, 16, 7);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -4987,7 +4975,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5026,7 +5014,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,600,480,480,480,480,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,600,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5067,7 +5055,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(40, 152, 10, 1, 14080);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5106,7 +5094,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,
 		495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5147,7 +5135,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 80, 10, 1, 16080);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5186,7 +5174,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,618,498,498,
 		498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,618,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5225,7 +5213,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5264,7 +5252,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,605,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5303,7 +5291,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5342,7 +5330,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5381,7 +5369,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5420,7 +5408,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5462,7 +5450,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(80, 40, 9, 17);  // (shiny trinket)
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5504,7 +5492,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.nearelephant = false;
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5545,7 +5533,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5586,7 +5574,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5628,7 +5616,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(184, 176, 10, 1, 12100);  // (savepoint)
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5669,7 +5657,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5710,7 +5698,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5749,7 +5737,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5790,7 +5778,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(216, 72, 10, 1, 16100);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5829,7 +5817,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5868,7 +5856,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5909,7 +5897,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(40, 112, 9, 13);  // (shiny trinket)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5948,7 +5936,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -5987,7 +5975,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6026,7 +6014,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6065,7 +6053,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6110,7 +6098,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.nearelephant = true;
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6155,7 +6143,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.nearelephant = true;
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6196,7 +6184,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6235,7 +6223,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6274,7 +6262,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,0,0,0,600,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,0,0,0,600,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6313,7 +6301,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6352,7 +6340,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6391,7 +6379,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6430,7 +6418,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,620,0,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6469,7 +6457,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6515,7 +6503,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(240, 72, 10, 1, 8120);  // (savepoint)
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6560,7 +6548,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.nearelephant = true;
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6602,7 +6590,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.nearelephant = false;
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6641,7 +6629,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6680,7 +6668,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,611,0,0,0,0,0,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,611,0,0,0,0,0,0,0,0,609,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6719,7 +6707,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,608,0,0,0,0,0,0,0,0,606,486,486,486,486,486,486,486,486,486,486,486,486,486,486,486,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6758,7 +6746,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6797,7 +6785,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,615,495,495,495,617,0,0,0,0,0,215,95,217,216,216,216,216,216,216,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,615,495,495,495,617,0,0,0,0,0,215,95,217,216,216,216,216,216,216,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6838,7 +6826,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(48, 96, 14); //Teleporter!
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6882,7 +6870,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createblock(5, 280-4, 32, 20, 16, 9);
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6921,7 +6909,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,701,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,701,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -6962,7 +6950,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(80, 104, 10, 1, 16130);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7003,7 +6991,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(240, 128, 10, 1, 17130);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7042,7 +7030,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7081,7 +7069,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7122,7 +7110,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7161,7 +7149,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7200,7 +7188,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7239,7 +7227,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,620,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		498,498,498,620,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7283,7 +7271,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createentity(88, 160, 20, 1);//terminal
 
 		obj.createblock(5, 88-4, 160, 20, 16, 11);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7324,7 +7312,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7363,7 +7351,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		480,480,480,480,480,480,480,480,480,480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7402,7 +7390,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		495,495,495,495,495,495,495,495,495,495,617,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7443,7 +7431,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(88, 96, 10, 0, 18150);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7482,7 +7470,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,489,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7524,7 +7512,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(72, 120, 13); //Warp Token
 
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7566,7 +7554,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		roomtileset = 0; // (Use space station tileset)
 		obj.createentity(176, 152, 10, 1, 14160);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7605,7 +7593,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7644,7 +7632,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7683,7 +7671,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,539,579,579,579,579,579,
 		498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7728,7 +7716,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createblock(5, 192-4, 120, 20, 16, 10);
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7769,7 +7757,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7810,7 +7798,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7851,7 +7839,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		roomtileset = 0; // (Use space station tileset)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7890,7 +7878,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7931,7 +7919,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(112, 72, 14); //Teleporter!
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -7970,7 +7958,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8011,7 +7999,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(152, 152, 10, 0, 19170);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8050,7 +8038,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,576,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8092,7 +8080,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		roomtileset = 0; // (Use space station tileset)
 		obj.createentity(104, 152, 10, 1, 15180);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8131,7 +8119,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8170,7 +8158,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8211,7 +8199,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(192, 176, 10, 1, 105190);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8252,7 +8240,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(40, 192, 10, 1, 106190);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8292,7 +8280,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,617,0,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		495,495,617,0,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8333,7 +8321,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(72, 168, 10, 1, 111190);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8372,7 +8360,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8411,7 +8399,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		498,498,498,498,498,498,620,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		498,498,498,498,498,498,620,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8450,7 +8438,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,600,480,480,480,480,480,480,
 		480,480,480,480,480,480,602,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,600,480,480,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8491,7 +8479,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(80, 144, 10, 1, 14190);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8530,7 +8518,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,612,492,492,492,492,492,492,492,492,492,492,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8569,7 +8557,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,603,483,483,483,483,483,483,483,483,483,483,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8610,7 +8598,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		};
 
 		obj.createentity(168, 88, 10, 1, 17190);  // (savepoint)
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8649,7 +8637,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,618,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,498,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8688,7 +8676,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,480,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8731,7 +8719,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 			286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
 			286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
 			};
-			result.insert(result.end(), contents, contents+1200);
+			result = contents;
 		}
 		else if(obj.altstates==2)
 		{
@@ -8769,7 +8757,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 			286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
 			286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
 			};
-			result.insert(result.end(), contents, contents+1200);
+			result = contents;
 		}
 		else
 		{
@@ -8806,7 +8794,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 			286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
 			286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
 			};
-			result.insert(result.end(), contents, contents+1200);
+			result = contents;
 		}
 		break;
 
@@ -8845,7 +8833,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,
 		280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,280,
 		};
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8906,7 +8894,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 			obj.entities[obj.getcrewman(1)].tile +=6;
 			obj.createblock(5, 83 - 32, 0, 32 + 32 + 32, 240, 1);
 		}
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -8967,7 +8955,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createentity(192, 128, 25, 0, 11); //Terminal
 		obj.createentity(224, 128, 25, 0, 10); //Terminal
 		obj.createentity(256, 128, 25, 0, 9); //Terminal
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -9009,7 +8997,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 
 		obj.createentity(152, 168, 25, 0, 20); //Terminal
 		obj.createentity(152, 168, 25, 0, 19); //Terminal
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -9065,7 +9053,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		//victoria:
 		obj.createentity(193, 89, 18, 16, 0, 18);
 		obj.createblock(5, 193-16, 0, 32+32, 240, 5);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -9117,7 +9105,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		//naughty corner!
 		obj.createblock(1, 30, 0, 20, 50, 15);
 		obj.createblock(1, 90, 0, 20, 50, 16);
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 
@@ -9162,7 +9150,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 		obj.createentity(-8, 84-32, 11, 328+8);  // (horizontal gravity line)
 		obj.createentity(-8, 148 + 32, 11, 328+8);  // (horizontal gravity line)
 		obj.createblock(1, -10, 84 - 16, 340, 32, 9); //start the game
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 #endif
@@ -9171,7 +9159,7 @@ std::vector<int> otherlevelclass::loadlevel(int rx, int ry)
 	{
 		static const int contents[1200] = {0};
 		//obj.fatal_bottom();
-		result.insert(result.end(), contents, contents+1200);
+		result = contents;
 		break;
 	}
 	}

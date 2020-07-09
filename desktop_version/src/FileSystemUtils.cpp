@@ -34,8 +34,8 @@
 #define MAX_PATH PATH_MAX
 #endif
 
-char saveDir[MAX_PATH];
-char levelDir[MAX_PATH];
+char saveDir[MAX_PATH] = {'\0'};
+char levelDir[MAX_PATH] = {'\0'};
 
 void PLATFORM_getOSDirectory(char* output);
 void PLATFORM_migrateSaveData(char* output);
@@ -74,18 +74,24 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
 	PHYSFS_setWriteDir(output);
 	printf("Base directory: %s\n", output);
 
-	/* Create save directory */
-	strcpy(saveDir, output);
-	strcat(saveDir, "saves");
-	strcat(saveDir, PHYSFS_getDirSeparator());
-	PHYSFS_mkdir(saveDir);
+	/* Create the save/level folders */
+	mkdirResult |= PHYSFS_mkdir("saves");
+	mkdirResult |= PHYSFS_mkdir("levels");
+
+	/* Store full save directory */
+	SDL_snprintf(saveDir, sizeof(saveDir), "%s%s%s",
+		output,
+		"saves",
+		PHYSFS_getDirSeparator()
+	);
 	printf("Save directory: %s\n", saveDir);
 
-	/* Create level directory */
-	strcpy(levelDir, output);
-	strcat(levelDir, "levels");
-	strcat(levelDir, PHYSFS_getDirSeparator());
-	mkdirResult |= PHYSFS_mkdir(levelDir);
+	/* Store full level directory */
+	SDL_snprintf(levelDir, sizeof(levelDir), "%s%s%s",
+		output,
+		"levels",
+		PHYSFS_getDirSeparator()
+	);
 	printf("Level directory: %s\n", levelDir);
 
 	/* We didn't exist until now, migrate files! */
@@ -122,8 +128,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
 		return 0;
 	}
 
-	strcpy(output, PHYSFS_getBaseDir());
-	strcpy(output, "gamecontrollerdb.txt");
+	SDL_snprintf(output, sizeof(output), "%s%s", PHYSFS_getBaseDir(), "gamecontrollerdb.txt");
 	if (SDL_GameControllerAddMappingsFromFile(output) < 0)
 	{
 		printf("gamecontrollerdb.txt not found!\n");
@@ -166,6 +171,50 @@ void FILESYSTEM_mount(const char *fname)
 	}
 }
 
+bool FILESYSTEM_assetsmounted = false;
+
+void FILESYSTEM_mountassets(const char* path)
+{
+	const std::string _path(path);
+
+	std::string zippath = "levels/" + _path.substr(7,_path.size()-14) + ".data.zip";
+	std::string dirpath = "levels/" + _path.substr(7,_path.size()-14) + "/";
+	std::string zip_path;
+	const char* cstr = PHYSFS_getRealDir(_path.c_str());
+
+	if (cstr) {
+		zip_path = cstr;
+	}
+
+	if (cstr && FILESYSTEM_directoryExists(zippath.c_str())) {
+		printf("Custom asset directory exists at %s\n", zippath.c_str());
+		FILESYSTEM_mount(zippath.c_str());
+		graphics.reloadresources();
+		FILESYSTEM_assetsmounted = true;
+	} else if (zip_path != "data.zip" && !endsWith(zip_path, "/data.zip") && endsWith(zip_path, ".zip")) {
+		printf("Custom asset directory is .zip at %s\n", zip_path.c_str());
+		PHYSFS_File* zip = PHYSFS_openRead(zip_path.c_str());
+		zip_path += ".data.zip";
+		if (zip == NULL) {
+			printf("error loading .zip: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		} else if (PHYSFS_mountHandle(zip, zip_path.c_str(), "/", 0) == 0) {
+			printf("error mounting .zip: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		} else {
+			graphics.assetdir = zip_path;
+		}
+		FILESYSTEM_assetsmounted = true;
+		graphics.reloadresources();
+	} else if (FILESYSTEM_directoryExists(dirpath.c_str())) {
+		printf("Custom asset directory exists at %s\n",dirpath.c_str());
+		FILESYSTEM_mount(dirpath.c_str());
+		graphics.reloadresources();
+		FILESYSTEM_assetsmounted = true;
+	} else {
+		printf("Custom asset directory does not exist\n");
+		FILESYSTEM_assetsmounted = false;
+	}
+}
+
 void FILESYSTEM_unmountassets()
 {
 	if (graphics.assetdir != "")
@@ -179,6 +228,7 @@ void FILESYSTEM_unmountassets()
 	{
 		printf("Cannot unmount when no asset directory is mounted\n");
 	}
+	FILESYSTEM_assetsmounted = false;
 }
 
 void FILESYSTEM_loadFileToMemory(
