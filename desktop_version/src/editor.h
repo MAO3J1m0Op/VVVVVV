@@ -35,6 +35,15 @@ enum textmode {
 // Returned by match()
 typedef unsigned char matchcode;
 
+class tilesets {
+public:
+  static int spacestation(int color, matchcode surround);
+  static int outside(int color, matchcode surround);
+  static int lab(int color, matchcode surround);
+  static int warpzone(int color, matchcode surround);
+  static int ship(int color, matchcode surround);
+};
+
 class edentities{
 public:
   int x, y, t;
@@ -129,7 +138,6 @@ class editorclass{
   void placetilelocal(int x, int y, int t);
 
   int getenemyframe(int t);
-  int base(int x, int y);
 
   int backbase(int x, int y);
 

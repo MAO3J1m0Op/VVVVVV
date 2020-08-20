@@ -26,6 +26,53 @@
 #endif
 #include <inttypes.h>
 
+int tilesets::spacestation(int color, matchcode surround)
+{
+    int base;
+    if(color>=22)
+    {
+        base = 483 + (color-22)*3;
+    }
+    else if(color>=11)
+    {
+        base = 283 + (color-11)*3;
+    }
+    else
+    {
+        base = 83 + color*3;
+    }
+    
+    // TODO
+}
+
+int tilesets::outside(int color, matchcode surround)
+{
+    int base = 480 + color*3;
+
+    // TODO
+}
+
+int tilesets::lab(int color, matchcode surround)
+{
+    int base = 280 + color*3;
+
+    // TODO
+}
+
+int tilesets::warpzone(int color, matchcode surround)
+{
+    int base = 80 + color*3;
+
+    // TODO
+}
+
+int tilesets::ship(int color, matchcode surround)
+{
+    int base = 101 + color*3;
+
+    // TODO
+}
+
 edlevelclass::edlevelclass()
 {
     tileset=0;
@@ -943,44 +990,6 @@ void editorclass::placetilelocal( int x, int y, int t )
         contents[x+(levx*40)+vmult[y+(levy*30)]]=t;
     }
     updatetiles=true;
-}
-
-int editorclass::base( int x, int y )
-{
-    //Return the base tile for the given tileset and colour
-    int temp=x+(y*maxwidth);
-    if(level[temp].tileset==0)  //Space Station
-    {
-        if(level[temp].tilecol>=22)
-        {
-            return 483 + ((level[temp].tilecol-22)*3);
-        }
-        else if(level[temp].tilecol>=11)
-        {
-            return 283 + ((level[temp].tilecol-11)*3);
-        }
-        else
-        {
-            return 83 + (level[temp].tilecol*3);
-        }
-    }
-    else if(level[temp].tileset==1)   //Outside
-    {
-        return 480 + (level[temp].tilecol*3);
-    }
-    else if(level[temp].tileset==2)   //Lab
-    {
-        return 280 + (level[temp].tilecol*3);
-    }
-    else if(level[temp].tileset==3)   //Warp Zone/Intermission
-    {
-        return 80 + (level[temp].tilecol*3);
-    }
-    else if(level[temp].tileset==4)   //SHIP
-    {
-        return 101 + (level[temp].tilecol*3);
-    }
-    return 0;
 }
 
 int editorclass::backbase( int x, int y )
@@ -5332,6 +5341,7 @@ void editorinput()
     {
         ed.updatetiles=false;
         //Correctly set the tiles in the current room
+        int col = ed.level[ed.levx + (ed.levy*ed.maxwidth)].tilecol;
         switch(ed.level[ed.levx + (ed.levy*ed.maxwidth)].tileset)
         {
         case 0: //The Space Station
@@ -5353,7 +5363,7 @@ void editorinput()
                     else if(ed.contents[temp]>0)
                     {
                         //Fix tiles
-                        ed.contents[temp]=ed.edgetile(i,j)+ed.base(ed.levx,ed.levy);
+                        ed.contents[temp]=tilesets::spacestation(col, ed.match(i, j));
                     }
                 }
             }
@@ -5377,7 +5387,7 @@ void editorinput()
                     else if(ed.contents[temp]>0)
                     {
                         //Fix tiles
-                        ed.contents[temp]=ed.edgetile(i,j)+ed.base(ed.levx,ed.levy);
+                        ed.contents[temp]=tilesets::outside(col, ed.match(i, j));
                     }
                 }
             }
@@ -5401,7 +5411,7 @@ void editorinput()
                     else if(ed.contents[temp]>0)
                     {
                         //Fix tiles
-                        ed.contents[temp]=ed.edgetile(i,j)+ed.base(ed.levx,ed.levy);
+                        ed.contents[temp]=tilesets::lab(col, ed.match(i, j));
                     }
                 }
             }
@@ -5425,7 +5435,7 @@ void editorinput()
                     else if(ed.contents[temp]>0)
                     {
                         //Fix tiles
-                        ed.contents[temp]=ed.edgetile(i,j)+ed.base(ed.levx,ed.levy);
+                        ed.contents[temp]=tilesets::warpzone(col, ed.match(i, j));
                     }
                 }
             }
@@ -5449,7 +5459,7 @@ void editorinput()
                     else if(ed.contents[temp]>0)
                     {
                         //Fix tiles
-                        ed.contents[temp]=ed.edgetile(i,j)+ed.base(ed.levx,ed.levy);
+                        ed.contents[temp]=tilesets::ship(col, ed.match(i, j));
                     }
                 }
             }
