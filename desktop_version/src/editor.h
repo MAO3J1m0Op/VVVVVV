@@ -32,6 +32,9 @@ enum textmode {
   LAST_ENTTEXT = TEXT_ROOMTEXT
 };
 
+// Returned by match()
+typedef unsigned char matchcode;
+
 class edentities{
 public:
   int x, y, t;
@@ -142,11 +145,11 @@ class editorclass{
   int free(int x, int y);
   int absfree(int x, int y);
 
-  int match(int x, int y);
-  int warpzonematch(int x, int y);
-  int outsidematch(int x, int y);
+  matchcode match(int x, int y);
+  matchcode warpzonematch(int x, int y);
+  matchcode outsidematch(int x, int y);
 
-  int backmatch(int x, int y);
+  matchcode backmatch(int x, int y);
 
   void switch_tileset(const bool reversed = false);
   void switch_tilecol(const bool reversed = false);

@@ -1224,7 +1224,26 @@ int editorclass::absfree( int x, int y )
     return 1;
 }
 
-int editorclass::match( int x, int y )
+// A bit is 0 if the border is free
+//   8 128  4
+//  64  X  32
+//   2  16  1 
+matchcode editorclass::match( int x, int y )
+{
+    return 0
+    // Edges
+    | free(x, y - 1) ? 128 : 0
+    | free(x - 1, y) ? 64 : 0
+    | free(x + 1, y) ? 32 : 0
+    | free(x, y + 1) ? 16 : 0
+    // Corners
+    | free(x - 1, y - 1) ? 8 : 0
+    | free(x + 1, y - 1) ? 4 : 0
+    | free(x - 1, y + 1) ? 2 : 0
+    | free(x + 1, y + 1) ? 1 : 0;
+}
+
+matchcode editorclass::warpzonematch( int x, int y )
 {
     if(free(x-1,y)==0 && free(x,y-1)==0 && free(x+1,y)==0 && free(x,y+1)==0) return 0;
 
@@ -1245,28 +1264,7 @@ int editorclass::match( int x, int y )
     return 0;
 }
 
-int editorclass::warpzonematch( int x, int y )
-{
-    if(free(x-1,y)==0 && free(x,y-1)==0 && free(x+1,y)==0 && free(x,y+1)==0) return 0;
-
-    if(free(x-1,y)==0 && free(x,y-1)==0) return 10;
-    if(free(x+1,y)==0 && free(x,y-1)==0) return 11;
-    if(free(x-1,y)==0 && free(x,y+1)==0) return 12;
-    if(free(x+1,y)==0 && free(x,y+1)==0) return 13;
-
-    if(free(x,y-1)==0) return 1;
-    if(free(x-1,y)==0) return 2;
-    if(free(x,y+1)==0) return 3;
-    if(free(x+1,y)==0) return 4;
-    if(free(x-1,y-1)==0) return 5;
-    if(free(x+1,y-1)==0) return 6;
-    if(free(x-1,y+1)==0) return 7;
-    if(free(x+1,y+1)==0) return 8;
-
-    return 0;
-}
-
-int editorclass::outsidematch( int x, int y )
+matchcode editorclass::outsidematch( int x, int y )
 {
 
     if(backonlyfree(x-1,y)==0 && backonlyfree(x+1,y)==0) return 2;
@@ -1275,7 +1273,7 @@ int editorclass::outsidematch( int x, int y )
     return 0;
 }
 
-int editorclass::backmatch( int x, int y )
+matchcode editorclass::backmatch( int x, int y )
 {
     //Returns the first position match for a border
     // 5 1 6
