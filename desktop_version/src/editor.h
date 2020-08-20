@@ -146,7 +146,6 @@ class editorclass{
   int absfree(int x, int y);
 
   matchcode match(int x, int y);
-  matchcode warpzonematch(int x, int y);
   matchcode outsidematch(int x, int y);
 
   matchcode backmatch(int x, int y);
@@ -160,7 +159,6 @@ class editorclass{
   bool save(std::string& _path);
   void generatecustomminimap();
   int edgetile(int x, int y);
-  int warpzoneedgetile(int x, int y);
   int outsideedgetile(int x, int y);
 
   int backedgetile(int x, int y);
