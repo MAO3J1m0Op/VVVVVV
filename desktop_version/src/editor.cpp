@@ -1286,57 +1286,6 @@ matchcode editorclass::backmatch( int x, int y )
     return 0;
 }
 
-int editorclass::edgetile( int x, int y )
-{
-    switch(match(x,y))
-    {
-    case 14:
-        return 0;
-        break;
-    case 10:
-        return 80;
-        break;
-    case 11:
-        return 82;
-        break;
-    case 12:
-        return 160;
-        break;
-    case 13:
-        return 162;
-        break;
-    case 1:
-        return 81;
-        break;
-    case 2:
-        return 120;
-        break;
-    case 3:
-        return 161;
-        break;
-    case 4:
-        return 122;
-        break;
-    case 5:
-        return 42;
-        break;
-    case 6:
-        return 41;
-        break;
-    case 7:
-        return 2;
-        break;
-    case 8:
-        return 1;
-        break;
-    case 0:
-    default:
-        return 0;
-        break;
-    }
-    return 0;
-}
-
 int editorclass::outsideedgetile( int x, int y )
 {
     switch(outsidematch(x,y))

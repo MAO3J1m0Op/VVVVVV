@@ -166,7 +166,6 @@ class editorclass{
   bool load(std::string& _path);
   bool save(std::string& _path);
   void generatecustomminimap();
-  int edgetile(int x, int y);
   int outsideedgetile(int x, int y);
 
   int backedgetile(int x, int y);
