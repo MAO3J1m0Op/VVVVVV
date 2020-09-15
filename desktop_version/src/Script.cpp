@@ -9,6 +9,8 @@
 #include "Music.h"
 #include "UtilityClass.h"
 
+#include <limits.h>
+
 scriptclass::scriptclass()
 {
 	//Start SDL
@@ -76,6 +78,8 @@ void scriptclass::tokenize( const std::string& t )
 
 void scriptclass::run()
 {
+	// This counter here will stop the function when it gets too high
+	short execution_counter = 0;
 	while(running && scriptdelay<=0 && !game.pausescript)
 	{
 		if (position < (int) commands.size())
@@ -1002,7 +1006,7 @@ void scriptclass::run()
 						obj.entities[i].rule = 7;
 						obj.entities[i].tile = 6;
 					}
-					else if (obj.entities[i].rule == 7)
+					else if (obj.entities[i].rule != 0) // Don't destroy player entity (rule 0)
 					{
 						obj.entities[i].rule = 6;
 						obj.entities[i].tile = 0;
@@ -2603,6 +2607,17 @@ void scriptclass::run()
 		{
 			running = false;
 		}
+		// Don't increment if we're at the max, signed int overflow is UB
+		if (execution_counter == SHRT_MAX)
+		{
+			// We must be in an infinite loop
+			printf("Warning: execution counter got to %i, stopping script\n", SHRT_MAX);
+			running = false;
+		}
+		else
+		{
+			execution_counter++;
+		}
 	}
 
 	if(scriptdelay>0)
@@ -3509,6 +3524,10 @@ void scriptclass::teleport()
 		game.state = 0;
 		load(game.teleportscript);
 		game.teleportscript = "";
+
+		// FIXME: Remove this once game loop order is fixed in 2.4!
+		run();
+		dontrunnextframe = true;
 	}
 	else
 	{
